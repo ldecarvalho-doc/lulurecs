@@ -1,14 +1,17 @@
 name: Build and push CLI doc to S3
-
-on:
-  release:
+on: # select the appropriate trigger event https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows
+#  pull_request:
+#  push:
+#  workflow_dispatch:
+#  release:
     types:
-      - published
+      - published # Triggered only when a new release is published
     branches:
       - master
-
 permissions:
   contents: write
+
+# The job below is intended for a deploy at each release. edit the check out part accordingly
 
 jobs:
   deploy:
@@ -19,24 +22,20 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.release.tag_name }}
-
-      - name: Verify release commit
-        run: |
+      - name: Verify release commit # This step is not required if you do not run this job on release
+        run: | # Commit hash to compare with the commit returned by actions/checkout@v4 - Tag to compare with the latest release
           echo "Checked out commit: $(git rev-parse HEAD)"
           echo "Expected tag: ${{ github.event.release.tag_name }}"
-
-      - name: Prepare temporary folder for build
-        run: |
+      - name: prepare temporary folder for build
+        run: | # Creates a temporary "docs" folder within the existing "docs" folder because the mkdocs.yml must be in the parent folder of the markdown pages
           cd docs
           mkdir docs
-          cp -r commands/* docs/
+          cp commands/* docs/
           cp -r static_files/* docs/
-
       - name: Pull Material for MKdocs image and build doc
         run: |
           docker pull squidfunk/mkdocs-material
           docker run --rm -i -v ${PWD}/docs:/docs squidfunk/mkdocs-material build
-
       - name: Download and set up AWS CLI
         run: |
           sudo apt update
@@ -44,22 +43,19 @@ jobs:
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           ./aws/install
-
       - name: Set up AWS credentials
         env:
           DOC_ACCESS_KEY: ${{ secrets.DOC_ACCESS_KEY }}
           DOC_SECRET_KEY: ${{ secrets.DOC_SECRET_KEY }}
-        run: |
+        run: | # AWS region "fr-par" is a placeholder as the DOC_S3_ENDPOINT variable overrides it
           aws configure set aws_access_key_id $DOC_ACCESS_KEY
           aws configure set aws_secret_access_key $DOC_SECRET_KEY
           aws configure set region fr-par
-
       - name: Upload file to Scaleway Object Storage
         env:
           DOC_BUCKET_NAME: ${{ secrets.DOC_BUCKET_NAME }}
           DOC_S3_ENDPOINT: ${{ secrets.DOC_S3_ENDPOINT }}
         run: |
           aws s3 cp --recursive ./docs/site/ s3://$DOC_BUCKET_NAME --endpoint-url $DOC_S3_ENDPOINT
-
       - name: Delete temporary folder
-        run: rm -rf docs/docs/
+run: rm -rf docs/docs/
