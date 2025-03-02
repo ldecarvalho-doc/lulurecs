@@ -1,0 +1,9 @@
+/* Set font for titles */
+.title {
+  font-family: 'Arsenal SC', sans-serif;
+}
+
+/* Set font for paragraphs */
+.paragraph {
+  font-family: 'Lato', sans-serif;
+}
