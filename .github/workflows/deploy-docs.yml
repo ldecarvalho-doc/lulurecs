@@ -1,17 +1,14 @@
 name: Build and push CLI doc to S3
-on: # select the appropriate trigger event https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows
-#  pull_request:
-#  push:
-#  workflow_dispatch:
-#  release:
+
+on:
+  release:
     types:
-      - published # Triggered only when a new release is published
+      - published
     branches:
       - master
+
 permissions:
   contents: write
-
-# The job below is intended for a deploy at each release. edit the check out part accordingly
 
 jobs:
   deploy:
@@ -22,12 +19,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.release.tag_name }}
-      - name: Verify release commit # This step is not required if you do not run this job on release
-        run: | # Commit hash to compare with the commit returned by actions/checkout@v4 - Tag to compare with the latest release
+      - name: Verify release commit
+        run: |
           echo "Checked out commit: $(git rev-parse HEAD)"
           echo "Expected tag: ${{ github.event.release.tag_name }}"
       - name: prepare temporary folder for build
-        run: | # Creates a temporary "docs" folder within the existing "docs" folder because the mkdocs.yml must be in the parent folder of the markdown pages
+        run: |
           cd docs
           mkdir docs
           cp commands/* docs/
@@ -47,7 +44,7 @@ jobs:
         env:
           DOC_ACCESS_KEY: ${{ secrets.DOC_ACCESS_KEY }}
           DOC_SECRET_KEY: ${{ secrets.DOC_SECRET_KEY }}
-        run: | # AWS region "fr-par" is a placeholder as the DOC_S3_ENDPOINT variable overrides it
+        run: |
           aws configure set aws_access_key_id $DOC_ACCESS_KEY
           aws configure set aws_secret_access_key $DOC_SECRET_KEY
           aws configure set region fr-par
@@ -58,4 +55,4 @@ jobs:
         run: |
           aws s3 cp --recursive ./docs/site/ s3://$DOC_BUCKET_NAME --endpoint-url $DOC_S3_ENDPOINT
       - name: Delete temporary folder
-run: rm -rf docs/docs/
+        run: rm -rf docs/docs/
