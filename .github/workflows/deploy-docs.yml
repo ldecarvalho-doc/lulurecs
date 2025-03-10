@@ -23,12 +23,6 @@ jobs:
         run: |
           echo "Checked out commit: $(git rev-parse HEAD)"
           echo "Expected tag: ${{ github.event.release.tag_name }}"
-      - name: prepare temporary folder for build
-        run: |
-          cd docs
-          mkdir docs
-          cp commands/* docs/
-          cp -r static_files/* docs/
       - name: Pull Material for MKdocs image and build doc
         run: |
           docker pull squidfunk/mkdocs-material
@@ -54,5 +48,3 @@ jobs:
           DOC_S3_ENDPOINT: ${{ secrets.DOC_S3_ENDPOINT }}
         run: |
           aws s3 cp --recursive ./docs/site/ s3://$DOC_BUCKET_NAME --endpoint-url $DOC_S3_ENDPOINT
-      - name: Delete temporary folder
-        run: rm -rf docs/docs/
