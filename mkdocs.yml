@@ -4,20 +4,25 @@
 site_name: lulu recs
 site_description: Recommendations for my friends!
 site_author: lulu
+site_url: https://lulurecs.s3.fr-par.scw.cloud
 
 theme:
   name: 'material'
+  favicon: images/blue-whale.png
+  logo: images/blue-whale.png
+  font: 
+    text: Lato
   palette: # Palette toggle for light mode
     - scheme: default
-      primary: black # Primary defines the primary color of the theme.
-      accent: purple # Accent specifies the accent color of the theme.
+      primary: white # Primary defines the primary color of the theme.
+      accent: light blue # Accent specifies the accent color of the theme.
       toggle: # toggle specifies the icon and name for toggling between light and dark modes.
         icon: material/toggle-switch
         name: Switch to dark mode
   # Palette toggle for dark mode
     - scheme: slate
-      primary: white
-      accent: deep purple
+      primary: black
+      accent: blue
       toggle:
         icon: material/toggle-switch-off-outline
         name: Switch to light mode
@@ -25,16 +30,24 @@ theme:
 ## css def
 extra_css:
   - stylesheets/extra.css
+  - http://fonts.googleapis.com/css?family=Audiowide|Exo+2|Rambla|Scada
 
 # Navigation configuration
 nav:
   - movies: movies/index.md
+  - music: 
+    - music/index.md
+    - kpop: music/kpop.md
+  - musicals: musicals/index.md
   - series: series/index.md
-  - music: music/index.md
+
 markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.emoji
+  - def_list
+
 icon: # Maps custom MkDocs icons to different types of admonitions (alerts or messages), using icons from the Octicons set.
   admonition:
     note: octicons/tag-16
@@ -55,6 +68,8 @@ features:
   - navigation.path # Shows the navigation path (breadcrumbs).
   - navigation.top # Adds a "back to top" button.
   - search.suggest # Enables search suggestions.
+  - navigation.indexes # possibility to have an index overview
+  - navigation.tracking # When anchor tracking is enabled, the URL in the address bar is automatically updated with the active anchor as highlighted in the table of contents
 plugins: # Lists the MkDocs plugins enabled for the site.
   - search # Adds search functionality.
 copyright: >
