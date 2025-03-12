@@ -40,4 +40,4 @@ jobs:
           DOC_BUCKET_NAME: ${{ secrets.DOC_BUCKET_NAME }}
           DOC_S3_ENDPOINT: ${{ secrets.DOC_S3_ENDPOINT }}
         run: |
-          aws s3 cp --recursive ./docs/site/ s3://$DOC_BUCKET_NAME --endpoint-url $DOC_S3_ENDPOINT
+          aws s3 cp --recursive ./site/ s3://$DOC_BUCKET_NAME --endpoint-url $DOC_S3_ENDPOINT
