@@ -1,9 +1,7 @@
 name: Build and push CLI doc to S3
 
 on:
-  release:
-    types:
-      - published
+  push:
     branches:
       - master
 
@@ -15,14 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: actions
     steps:
-      - name: Check out the release tag
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.release.tag_name }}
-      - name: Verify release commit
-        run: |
-          echo "Checked out commit: $(git rev-parse HEAD)"
-          echo "Expected tag: ${{ github.event.release.tag_name }}"
       - name: Pull Material for MKdocs image and build doc
         run: |
           docker pull squidfunk/mkdocs-material
