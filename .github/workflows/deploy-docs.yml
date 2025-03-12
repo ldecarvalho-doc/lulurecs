@@ -19,7 +19,7 @@ jobs:
       - name: Pull Material for MKdocs image and build doc
         run: |
           docker pull squidfunk/mkdocs-material
-          docker run --rm -i -v ${PWD}/docs:/docs squidfunk/mkdocs-material build
+          docker run --rm -i -v ${PWD}/docs:/ squidfunk/mkdocs-material build
       - name: Download and set up AWS CLI
         run: |
           sudo apt update
