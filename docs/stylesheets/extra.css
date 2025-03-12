@@ -1,9 +1,9 @@
 /* Set font for titles */
-.title {
-  font-family: 'Arsenal SC', sans-serif;
+h1 {
+  font-family: 'Golos Text', sans-serif;
+}
+/* Set font for paragraphs */
+body {
+  font-family: 'Inter', sans-serif;
 }
 
-/* Set font for paragraphs */
-.paragraph {
-  font-family: 'Lato', sans-serif;
-}
