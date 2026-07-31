@@ -46,6 +46,19 @@ python3 scripts/enrich.py
 
 It fills in missing `poster` and `description` fields (never touches your notes, ratings, or tags). Posters are hotlinked from TMDB's CDN, so the repo stays tiny.
 
+## Tag context (explain BL, SKAM, etc.)
+
+`data/tags.json` maps a tag to a label + explanation:
+
+```json
+"bl": {
+  "label": "BL (Boys' Love)",
+  "description": "What your friends need to know before pressing play..."
+}
+```
+
+Tags with context get a ⓘ in the sidebar; clicking the tag shows the explanation above the results (and hovering shows it as a tooltip). Tags without an entry just work as plain filters.
+
 ## Rec lists (curated groups for friends)
 
 `data/lists.json` holds named lists that group existing recs by their `id` — no tags involved, and lists can mix categories:

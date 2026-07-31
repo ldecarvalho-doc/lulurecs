@@ -1,0 +1,18 @@
+{
+  "bl": {
+    "label": "BL (Boys' Love)",
+    "description": "A genre of Asian dramas (Thailand, Taiwan, Japan, Korea, the Philippines...) centered on romance between men. Fair warning before you start: the cultural codes are different! Expect blatant product placement, cheesy soundtracks, cartoonish sound effects, and occasionally questionable acting. The genre is often more caricature than realistic representation — lots of fanservice — but there are real pearls in there, and the good ones subvert all of it. Survive the first episodes and trust the process."
+  },
+  "gl": {
+    "label": "GL (Girls' Love)",
+    "description": "The sapphic counterpart of BL. Still criminally rare — treasure every one you find."
+  },
+  "skam-universe": {
+    "label": "SKAM & its remakes",
+    "description": "SKAM is a Norwegian teen drama where each season follows one student from the same Oslo friend group — sensitive, realistic, kind of a better Skins. It became such a phenomenon that a bunch of countries remade it (France, Germany, Italy, Belgium...), each telling roughly the same stories in its own way. Comparing the versions is half the fun. In basically every version, season 3 is the gay one. You can start any season without watching the others."
+  },
+  "free-on-youtube": {
+    "label": "Free on YouTube",
+    "description": "Full episodes officially and freely available on YouTube, usually with English subtitles. Thai studios like GMMTV upload everything — bless them."
+  }
+}

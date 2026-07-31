@@ -99,7 +99,15 @@
     text-align: left;
   }
   .tagbar .chip.active { border-color: var(--accent-2); color: var(--accent-2); }
+  .tagbar .chip .info-dot { opacity: 0.7; font-size: 0.75em; }
   .content { flex: 1; min-width: 0; }
+  .tag-info {
+    background: var(--surface); border: 1px solid var(--accent-2); border-radius: var(--radius);
+    padding: 12px 16px; margin-bottom: 12px;
+  }
+  .tag-info h3 { font-size: 0.95rem; color: var(--accent-2); }
+  .tag-info p { color: var(--text-dim); font-size: 0.88rem; margin-top: 3px; }
+  .tag-info + .tag-info { margin-top: -4px; }
 
   .count { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 12px; }
 
@@ -196,6 +204,7 @@
   <aside class="tagbar" id="tagbar" aria-label="Filter by tag"></aside>
   <div class="content">
     <div class="list-header" id="listHeader"></div>
+    <div id="tagInfoWrap"></div>
     <div class="count" id="count"></div>
     <main class="grid" id="grid"></main>
   </div>
@@ -223,6 +232,7 @@
 
   let categories = [], items = [], activeCat = null;
   let lists = [], activeList = null, allItemsCache = null;
+  let tagInfo = {};
   const state = { search: "", type: "", country: "", tags: new Set(), favsOnly: false, sort: "rating" };
 
   const $ = id => document.getElementById(id);
@@ -313,6 +323,10 @@
       const chip = document.createElement("span");
       chip.className = "chip";
       chip.textContent = `${t} (${counts[t]})`;
+      if (tagInfo[t]) {
+        chip.insertAdjacentHTML("beforeend", ' <span class="info-dot">ⓘ</span>');
+        chip.title = tagInfo[t].description;
+      }
       chip.dataset.tag = t;
       chip.onclick = () => { state.tags.has(t) ? state.tags.delete(t) : state.tags.add(t); render(); };
       tagbar.appendChild(chip);
@@ -368,6 +382,10 @@
     } else {
       lh.style.display = "none";
     }
+    $("tagInfoWrap").innerHTML = [...state.tags]
+      .filter(t => tagInfo[t])
+      .map(t => `<div class="tag-info"><h3>${tagInfo[t].label || "#" + t}</h3><p>${tagInfo[t].description}</p></div>`)
+      .join("");
     document.querySelectorAll("#tagbar .chip").forEach(c => c.classList.toggle("active", state.tags.has(c.dataset.tag)));
     $("favToggle").classList.toggle("active", state.favsOnly);
     const list = filtered();
@@ -423,6 +441,7 @@
 
   (async () => {
     $("sort").value = state.sort;
+    try { tagInfo = await (await fetch("data/tags.json")).json(); } catch { tagInfo = {}; }
     await loadCategories();
     await loadLists();
     const m = location.hash.match(/list=([\w-]+)/);
