@@ -1,0 +1,37 @@
+[
+  {
+    "id": "lgbtq-visual-media",
+    "name": "LGBTQ+ Visual Media",
+    "emoji": "🏳️‍🌈",
+    "file": "data/lgbtq-visual-media.json",
+    "enabled": true
+  },
+  {
+    "id": "music",
+    "name": "Music",
+    "emoji": "🎵",
+    "file": "data/music.json",
+    "enabled": false
+  },
+  {
+    "id": "musicals",
+    "name": "Musicals",
+    "emoji": "🎭",
+    "file": "data/musicals.json",
+    "enabled": true
+  },
+  {
+    "id": "youtube",
+    "name": "YouTube Channels",
+    "emoji": "📺",
+    "file": "data/youtube.json",
+    "enabled": false
+  },
+  {
+    "id": "books",
+    "name": "Books",
+    "emoji": "📚",
+    "file": "data/books.json",
+    "enabled": false
+  }
+]

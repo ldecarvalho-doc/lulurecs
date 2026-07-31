@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lulurecs · recommendations for friends</title>
+<meta name="description" content="Lu's recommendations for friends — shows, movies, and more.">
+<style>
+  :root {
+    --bg: #12101a;
+    --surface: #1c1927;
+    --surface-2: #262234;
+    --border: #363048;
+    --text: #efecf6;
+    --text-dim: #a49cba;
+    --accent: #c084fc;
+    --accent-2: #f472b6;
+    --heart: #fb7185;
+    --radius: 14px;
+    --rainbow: linear-gradient(90deg, #f87171, #fb923c, #facc15, #4ade80, #60a5fa, #c084fc);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+  .rainbow-bar { height: 5px; background: var(--rainbow); }
+  header { max-width: 1100px; margin: 0 auto; padding: 32px 20px 8px; }
+  header h1 { font-size: 2rem; letter-spacing: -0.5px; }
+  header h1 .spark {
+    background: var(--rainbow);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header p.tag { color: var(--text-dim); margin-top: 4px; }
+
+  nav.cats { max-width: 1100px; margin: 18px auto 0; padding: 0 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  nav.cats button {
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 999px; padding: 8px 16px; cursor: pointer; font-size: 0.92rem;
+  }
+  nav.cats button.active { border-color: var(--accent); background: var(--surface-2); }
+  nav.cats button:disabled { opacity: 0.4; cursor: default; }
+
+  .controls {
+    max-width: 1100px; margin: 20px auto 0; padding: 0 20px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  }
+  .controls input[type="search"], .controls select {
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 12px; font-size: 0.95rem;
+  }
+  .controls input[type="search"] { flex: 1 1 220px; min-width: 180px; }
+  .controls select { flex: 0 0 auto; }
+  .toggle {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 12px; font-size: 0.95rem; user-select: none; color: var(--text);
+  }
+  .toggle.active { border-color: var(--heart); color: var(--heart); }
+
+  .tagbar { max-width: 1100px; margin: 12px auto 0; padding: 0 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .tagbar .chip {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
+    border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; cursor: pointer;
+  }
+  .tagbar .chip.active { border-color: var(--accent-2); color: var(--accent-2); }
+
+  .count { max-width: 1100px; margin: 14px auto 0; padding: 0 20px; color: var(--text-dim); font-size: 0.85rem; }
+
+  main.grid {
+    max-width: 1100px; margin: 14px auto 60px; padding: 0 20px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; display: flex; flex-direction: column; position: relative;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+  .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .poster { height: 150px; position: relative; background-size: cover; background-position: center 25%; }
+  .poster.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.6rem; font-weight: 700; color: rgba(255,255,255,0.85);
+  }
+  .fav-btn {
+    position: absolute; top: 10px; right: 10px; border: none; cursor: pointer;
+    background: rgba(18,16,26,0.65); backdrop-filter: blur(4px);
+    border-radius: 999px; width: 38px; height: 38px; font-size: 1.15rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .fav-btn.faved { color: var(--heart); }
+  .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .card-top h2 { font-size: 1.08rem; line-height: 1.3; }
+  .meta { color: var(--text-dim); font-size: 0.83rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .badge {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 1px 7px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .stars { color: var(--accent-2); font-size: 0.9rem; letter-spacing: 1px; }
+  .stars .off { color: var(--border); }
+  .desc { color: var(--text-dim); font-size: 0.88rem; }
+  details.notes { font-size: 0.88rem; }
+  details.notes summary {
+    cursor: pointer; color: var(--accent); font-size: 0.85rem; user-select: none;
+  }
+  details.notes p {
+    margin-top: 6px; background: var(--surface-2); border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0; padding: 8px 10px; white-space: pre-wrap;
+  }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .card-tags span {
+    font-size: 0.72rem; color: var(--text-dim); background: var(--surface-2);
+    border-radius: 999px; padding: 2px 9px; cursor: pointer;
+  }
+  .card-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 6px; }
+  .card-links a {
+    color: var(--accent); text-decoration: none; font-size: 0.83rem;
+    border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px;
+  }
+  .card-links a:hover { border-color: var(--accent); }
+  .empty { grid-column: 1 / -1; text-align: center; color: var(--text-dim); padding: 60px 0; }
+  footer { text-align: center; color: var(--text-dim); font-size: 0.8rem; padding: 24px 20px 40px; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="rainbow-bar"></div>
+<header>
+  <h1>lulurecs <span class="spark">✦</span></h1>
+  <p class="tag">Lu's recommendations for friends — rated, annotated, and lovingly curated.</p>
+</header>
+
+<nav class="cats" id="cats"></nav>
+
+<div class="controls">
+  <input type="search" id="search" placeholder="Search titles, notes, descriptions…">
+  <select id="typeFilter"><option value="">All types</option></select>
+  <select id="countryFilter"><option value="">All countries</option></select>
+  <select id="sort">
+    <option value="rating">Sort: Lu's rating</option>
+    <option value="title">Sort: Title A–Z</option>
+    <option value="year-desc">Sort: Newest</option>
+    <option value="year-asc">Sort: Oldest</option>
+  </select>
+  <span class="toggle" id="favToggle">♥ Favorites</span>
+</div>
+
+<div class="tagbar" id="tagbar"></div>
+<div class="count" id="count"></div>
+<main class="grid" id="grid"></main>
+
+<footer>
+  made with ♥ by Lu · favorites are saved in your browser ·
+  <a href="https://github.com/ldecarvalho-doc/lulurecs" target="_blank" rel="noopener">source</a>
+</footer>
+
+<script>
+(() => {
+  const FAV_KEY = "lulurecs:favorites";
+  const COUNTRY_NAMES = {
+    NO: "Norway", DE: "Germany", FR: "France", IT: "Italy", BE: "Belgium",
+    TH: "Thailand", TW: "Taiwan", JP: "Japan", KR: "South Korea", PH: "Philippines",
+    GB: "UK", US: "USA", BR: "Brazil"
+  };
+  const TYPE_LABELS = { series: "Series", movie: "Movie", musical: "Musical", list: "List", book: "Book", album: "Album", channel: "Channel" };
+  const PLACEHOLDER_GRADIENTS = [
+    "linear-gradient(135deg,#7c3aed,#db2777)", "linear-gradient(135deg,#0ea5e9,#8b5cf6)",
+    "linear-gradient(135deg,#f59e0b,#ef4444)", "linear-gradient(135deg,#10b981,#3b82f6)",
+    "linear-gradient(135deg,#ec4899,#f97316)", "linear-gradient(135deg,#6366f1,#14b8a6)"
+  ];
+
+  let categories = [], items = [], activeCat = null;
+  const state = { search: "", type: "", country: "", tags: new Set(), favsOnly: false, sort: "rating" };
+
+  const $ = id => document.getElementById(id);
+  const flag = cc => cc ? cc.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0))) : "";
+  const getFavs = () => { try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY)) || []); } catch { return new Set(); } };
+  const setFavs = favs => localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));
+  const hue = str => [...str].reduce((a, c) => a + c.charCodeAt(0), 0);
+
+  async function loadCategories() {
+    categories = await (await fetch("data/categories.json")).json();
+    const nav = $("cats");
+    nav.innerHTML = "";
+    categories.forEach(cat => {
+      const b = document.createElement("button");
+      b.textContent = `${cat.emoji} ${cat.name}`;
+      b.disabled = !cat.enabled;
+      if (!cat.enabled) b.title = "Coming soon!";
+      b.onclick = () => selectCategory(cat, b);
+      nav.appendChild(b);
+      if (cat.enabled && !activeCat) selectCategory(cat, b);
+    });
+  }
+
+  async function selectCategory(cat, btn) {
+    activeCat = cat;
+    [...$("cats").children].forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    items = await (await fetch(cat.file)).json();
+    buildFilters();
+    render();
+  }
+
+  function buildFilters() {
+    const typeSel = $("typeFilter"), ctrySel = $("countryFilter");
+    typeSel.innerHTML = '<option value="">All types</option>';
+    [...new Set(items.map(i => i.type))].sort().forEach(t => {
+      typeSel.insertAdjacentHTML("beforeend", `<option value="${t}">${TYPE_LABELS[t] || t}</option>`);
+    });
+    ctrySel.innerHTML = '<option value="">All countries</option>';
+    [...new Set(items.map(i => i.country).filter(Boolean))]
+      .sort((a, b) => (COUNTRY_NAMES[a] || a).localeCompare(COUNTRY_NAMES[b] || b))
+      .forEach(c => {
+        ctrySel.insertAdjacentHTML("beforeend", `<option value="${c}">${flag(c)} ${COUNTRY_NAMES[c] || c}</option>`);
+      });
+    const counts = {};
+    items.forEach(i => (i.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
+    const tagbar = $("tagbar");
+    tagbar.innerHTML = "";
+    Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).forEach(t => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = `${t} (${counts[t]})`;
+      chip.dataset.tag = t;
+      chip.onclick = () => { state.tags.has(t) ? state.tags.delete(t) : state.tags.add(t); render(); };
+      tagbar.appendChild(chip);
+    });
+    state.type = ""; state.country = ""; state.tags.clear();
+    typeSel.value = ""; ctrySel.value = "";
+  }
+
+  function filtered() {
+    const favs = getFavs();
+    const q = state.search.trim().toLowerCase();
+    let out = items.filter(i => {
+      if (state.favsOnly && !favs.has(i.id)) return false;
+      if (state.type && i.type !== state.type) return false;
+      if (state.country && i.country !== state.country) return false;
+      if (state.tags.size && ![...state.tags].every(t => (i.tags || []).includes(t))) return false;
+      if (q) {
+        const hay = [i.title, i.description, i.notes, (i.tags || []).join(" "), COUNTRY_NAMES[i.country] || ""].join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+    const s = state.sort;
+    out.sort((a, b) => {
+      if (s === "title") return a.title.localeCompare(b.title);
+      if (s === "year-desc") return (b.year || 0) - (a.year || 0);
+      if (s === "year-asc") return (a.year || 0) - (b.year || 0);
+      return (b.luRating || 0) - (a.luRating || 0) || a.title.localeCompare(b.title);
+    });
+    return out;
+  }
+
+  function stars(n) {
+    if (!n) return '<span class="stars off" title="Not rated yet">·····</span>';
+    let s = "";
+    for (let i = 1; i <= 5; i++) s += i <= n ? "★" : '<span class="off">★</span>';
+    return `<span class="stars" title="Lu's rating: ${n}/5">${s}</span>`;
+  }
+
+  function render() {
+    const favs = getFavs();
+    document.querySelectorAll("#tagbar .chip").forEach(c => c.classList.toggle("active", state.tags.has(c.dataset.tag)));
+    $("favToggle").classList.toggle("active", state.favsOnly);
+    const list = filtered();
+    $("count").textContent = `${list.length} of ${items.length} recs` + (state.favsOnly ? " · showing your favorites" : "");
+    const grid = $("grid");
+    grid.innerHTML = "";
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty">Nothing matches — try clearing some filters 💜</div>';
+      return;
+    }
+    list.forEach(i => {
+      const card = document.createElement("article");
+      card.className = "card";
+      const posterStyle = i.poster
+        ? `background-image:url('${i.poster}')`
+        : `background:${PLACEHOLDER_GRADIENTS[hue(i.id) % PLACEHOLDER_GRADIENTS.length]}`;
+      card.innerHTML = `
+        <div class="poster ${i.poster ? "" : "placeholder"}" style="${posterStyle}">
+          ${i.poster ? "" : (i.title[0] || "?")}
+          <button class="fav-btn ${favs.has(i.id) ? "faved" : ""}" title="Save to favorites" aria-label="Toggle favorite">${favs.has(i.id) ? "♥" : "♡"}</button>
+        </div>
+        <div class="card-body">
+          <div class="card-top"><h2>${i.title}</h2></div>
+          <div class="meta">
+            <span>${flag(i.country)} ${COUNTRY_NAMES[i.country] || i.country || ""}</span>
+            <span class="badge">${TYPE_LABELS[i.type] || i.type}</span>
+            ${i.year ? `<span>${i.year}</span>` : ""}
+            ${stars(i.luRating)}
+          </div>
+          ${i.description ? `<p class="desc">${i.description}</p>` : ""}
+          ${i.notes ? `<details class="notes"><summary>💬 Lu's notes</summary><p>${i.notes}</p></details>` : ""}
+          ${(i.tags || []).length ? `<div class="card-tags">${i.tags.map(t => `<span data-tag="${t}">#${t}</span>`).join("")}</div>` : ""}
+          ${(i.links || []).length ? `<div class="card-links">${i.links.map(l => `<a href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a>`).join("")}</div>` : ""}
+        </div>`;
+      card.querySelector(".fav-btn").onclick = () => {
+        const f = getFavs();
+        f.has(i.id) ? f.delete(i.id) : f.add(i.id);
+        setFavs(f);
+        render();
+      };
+      card.querySelectorAll(".card-tags span").forEach(el => {
+        el.onclick = () => { state.tags.add(el.dataset.tag); render(); };
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  $("search").oninput = e => { state.search = e.target.value; render(); };
+  $("typeFilter").onchange = e => { state.type = e.target.value; render(); };
+  $("countryFilter").onchange = e => { state.country = e.target.value; render(); };
+  $("sort").onchange = e => { state.sort = e.target.value; render(); };
+  $("favToggle").onclick = () => { state.favsOnly = !state.favsOnly; render(); };
+
+  loadCategories().catch(err => {
+    $("grid").innerHTML = `<div class="empty">Couldn't load data (${err.message}).<br>If you opened this file directly, serve it instead: <code>python3 -m http.server</code></div>`;
+  });
+})();
+</script>
+</body>
+</html>
