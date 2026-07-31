@@ -103,8 +103,13 @@
   .content { flex: 1; min-width: 0; }
   .tag-info {
     background: var(--surface); border: 1px solid var(--accent-2); border-radius: var(--radius);
-    padding: 12px 16px; margin-bottom: 12px;
+    padding: 12px 40px 12px 16px; margin-bottom: 12px; position: relative;
   }
+  .tag-info .close {
+    position: absolute; top: 8px; right: 10px; background: none; border: none;
+    color: var(--text-dim); font-size: 1.25rem; line-height: 1; cursor: pointer; padding: 4px;
+  }
+  .tag-info .close:hover { color: var(--accent-2); }
   .tag-info h3 { font-size: 0.95rem; color: var(--accent-2); }
   .tag-info p { color: var(--text-dim); font-size: 0.88rem; margin-top: 3px; }
   .tag-info + .tag-info { margin-top: -4px; }
@@ -319,9 +324,10 @@
     items.forEach(i => (i.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
     const tagbar = $("tagbar");
     tagbar.innerHTML = Object.keys(counts).length ? '<div class="tags-title">Tags</div>' : "";
-    Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).forEach(t => {
+    Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).forEach((t, idx) => {
       const chip = document.createElement("span");
       chip.className = "chip";
+      chip.dataset.idx = idx;
       chip.textContent = `${t} (${counts[t]})`;
       if (tagInfo[t]) {
         chip.insertAdjacentHTML("beforeend", ' <span class="info-dot">ⓘ</span>');
@@ -384,9 +390,20 @@
     }
     $("tagInfoWrap").innerHTML = [...state.tags]
       .filter(t => tagInfo[t])
-      .map(t => `<div class="tag-info"><h3>${tagInfo[t].label || "#" + t}</h3><p>${tagInfo[t].description}</p></div>`)
+      .map(t => `<div class="tag-info"><button class="close" data-tag="${t}" title="Remove this filter" aria-label="Remove filter">×</button><h3>${tagInfo[t].label || "#" + t}</h3><p>${tagInfo[t].description}</p></div>`)
       .join("");
+    $("tagInfoWrap").querySelectorAll(".close").forEach(b => {
+      b.onclick = () => { state.tags.delete(b.dataset.tag); render(); };
+    });
     document.querySelectorAll("#tagbar .chip").forEach(c => c.classList.toggle("active", state.tags.has(c.dataset.tag)));
+    { // selected tags float to the top of the sidebar
+      const tagbar = $("tagbar");
+      const chips = [...tagbar.querySelectorAll(".chip")];
+      chips.sort((a, b) =>
+        (state.tags.has(b.dataset.tag) - state.tags.has(a.dataset.tag)) ||
+        (a.dataset.idx - b.dataset.idx));
+      chips.forEach(c => tagbar.appendChild(c));
+    }
     $("favToggle").classList.toggle("active", state.favsOnly);
     const list = filtered();
     $("count").textContent = `${list.length} of ${items.length} recs` + (state.favsOnly ? " · showing your favorites" : "");
