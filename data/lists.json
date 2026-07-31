@@ -1,15 +1,19 @@
 [
   {
-    "id": "starter-pack",
-    "title": "lu's starter pack",
-    "description": "An example list — edit or delete me! Where I'd tell anyone to begin.",
+    "id": "jess",
+    "title": "recs for jess",
+    "description": "Curated with love — start at the top!",
     "items": [
+      "me-and-thee",
       "bad-buddy",
-      "skam-norway",
+      "not-me",
       "a-tale-of-a-thousand-stars",
-      "heartstopper",
-      "shelter",
-      "hamilton"
+      "moonlight-chicken",
+      "last-twilight",
+      "wandee-goodday",
+      "cherry-magic",
+      "cherry-magic-thailand",
+      "kieta-hatsukoi"
     ]
   }
 ]
