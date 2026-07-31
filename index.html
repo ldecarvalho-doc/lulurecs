@@ -460,16 +460,22 @@
   $("sort").onchange = e => { state.sort = e.target.value; render(); };
   $("favToggle").onclick = () => { state.favsOnly = !state.favsOnly; render(); };
 
+  function applyHash(hash) {
+    const m = (hash || "").match(/list=([\w-]+)/);
+    if (!m) return false;
+    const l = lists.find(x => x.id === m[1]);
+    if (l) { selectList(l); return true; }
+    return false;
+  }
+
   (async () => {
     $("sort").value = state.sort;
+    const initialHash = location.hash; // captured before selectCategory strips it
     try { tagInfo = await (await fetch("data/tags.json")).json(); } catch { tagInfo = {}; }
     await loadCategories();
     await loadLists();
-    const m = location.hash.match(/list=([\w-]+)/);
-    if (m) {
-      const l = lists.find(x => x.id === m[1]);
-      if (l) await selectList(l);
-    }
+    applyHash(initialHash);
+    window.addEventListener("hashchange", () => applyHash(location.hash));
   })().catch(err => {
     $("grid").innerHTML = `<div class="empty">Couldn't load data (${err.message}).<br>If you opened this file directly, serve it instead: <code>python3 -m http.server</code></div>`;
   });
