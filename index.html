@@ -62,18 +62,40 @@
   }
   .toggle.active { border-color: var(--heart); color: var(--heart); }
 
-  .tagbar { max-width: 1100px; margin: 12px auto 0; padding: 0 20px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .layout {
+    max-width: 1100px; margin: 16px auto 60px; padding: 0 20px;
+    display: flex; gap: 20px; align-items: flex-start;
+  }
+  aside.tagbar {
+    flex: 0 0 190px; position: sticky; top: 16px;
+    display: flex; flex-direction: column; gap: 5px;
+    max-height: calc(100vh - 32px); overflow-y: auto;
+  }
+  aside.tagbar .tags-title {
+    color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 1px; padding: 2px 4px 4px;
+  }
   .tagbar .chip {
     background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
-    border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; cursor: pointer;
+    border-radius: 8px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
+    text-align: left;
   }
   .tagbar .chip.active { border-color: var(--accent-2); color: var(--accent-2); }
+  .content { flex: 1; min-width: 0; }
 
-  .count { max-width: 1100px; margin: 14px auto 0; padding: 0 20px; color: var(--text-dim); font-size: 0.85rem; }
+  .count { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 12px; }
 
   main.grid {
-    max-width: 1100px; margin: 14px auto 60px; padding: 0 20px;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px;
+  }
+  @media (max-width: 720px) {
+    .layout { flex-direction: column; }
+    aside.tagbar {
+      position: static; flex: none; width: 100%; max-height: none;
+      flex-direction: row; flex-wrap: wrap;
+    }
+    aside.tagbar .tags-title { width: 100%; }
+    .tagbar .chip { border-radius: 999px; }
   }
   .card {
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -150,9 +172,13 @@
   <span class="toggle" id="favToggle">♥ Favorites</span>
 </div>
 
-<div class="tagbar" id="tagbar"></div>
-<div class="count" id="count"></div>
-<main class="grid" id="grid"></main>
+<div class="layout">
+  <aside class="tagbar" id="tagbar" aria-label="Filter by tag"></aside>
+  <div class="content">
+    <div class="count" id="count"></div>
+    <main class="grid" id="grid"></main>
+  </div>
+</div>
 
 <footer>
   made with ♥ by Lu · favorites are saved in your browser ·
@@ -187,14 +213,12 @@
     categories = await (await fetch("data/categories.json")).json();
     const nav = $("cats");
     nav.innerHTML = "";
-    categories.forEach(cat => {
+    categories.filter(cat => cat.enabled).forEach(cat => {
       const b = document.createElement("button");
       b.textContent = `${cat.emoji} ${cat.name}`;
-      b.disabled = !cat.enabled;
-      if (!cat.enabled) b.title = "Coming soon!";
       b.onclick = () => selectCategory(cat, b);
       nav.appendChild(b);
-      if (cat.enabled && !activeCat) selectCategory(cat, b);
+      if (!activeCat) selectCategory(cat, b);
     });
   }
 
@@ -222,7 +246,7 @@
     const counts = {};
     items.forEach(i => (i.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
     const tagbar = $("tagbar");
-    tagbar.innerHTML = "";
+    tagbar.innerHTML = Object.keys(counts).length ? '<div class="tags-title">Tags</div>' : "";
     Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).forEach(t => {
       const chip = document.createElement("span");
       chip.className = "chip";
