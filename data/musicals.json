@@ -8,7 +8,12 @@
     "luRating": 5,
     "description": "A bold and innovative musical blending hip-hop, rap, and jazz to tell the story of Alexander Hamilton and the United States from 1780 to 1800. 48 songs across two acts cover the nation's founding — slavery, the War of Independence, the Constitution — packed with intrigue, betrayals, scandals, and love affairs.",
     "notes": "10/10",
-    "tags": ["broadway", "hip-hop", "history", "all-time-favorite"],
+    "tags": [
+      "broadway",
+      "hip-hop",
+      "history",
+      "all-time-favorite"
+    ],
     "links": [],
     "poster": null
   },
@@ -21,7 +26,11 @@
     "luRating": null,
     "description": "Based on Victor Hugo's novel: Jean Valjean, a former convict just released from prison, struggles for two decades to stay out of trouble under a new identity while pursued by Inspector Javert. Set in war-devastated 19th-century France.",
     "notes": "",
-    "tags": ["west-end", "classic", "based-on-book"],
+    "tags": [
+      "west-end",
+      "classic",
+      "based-on-book"
+    ],
     "links": [],
     "poster": null
   },
@@ -34,7 +43,11 @@
     "luRating": null,
     "description": "Brad and Janet get caught in the rain on their way to visit a friend and seek refuge in a mysterious castle full of eccentric and strange characters.",
     "notes": "",
-    "tags": ["cult-classic", "campy", "queer-icon"],
+    "tags": [
+      "cult-classic",
+      "campy",
+      "queer-icon"
+    ],
     "links": [],
     "poster": null
   },
@@ -47,7 +60,10 @@
     "luRating": null,
     "description": "Belle Époque Paris: Christian, a penniless young poet, moves to Montmartre and is hired to write a spectacular show for the Moulin Rouge — where he falls in love with Satine, the cabaret's star courtesan.",
     "notes": "",
-    "tags": ["romance", "jukebox"],
+    "tags": [
+      "romance",
+      "jukebox"
+    ],
     "links": [],
     "poster": null
   },
@@ -60,7 +76,10 @@
     "luRating": null,
     "description": "A celebration of the birth of show business, inspired by the ambition and imagination of P.T. Barnum — a visionary who rose from nothing to create a global phenomenon.",
     "notes": "",
-    "tags": ["movie-musical", "feel-good"],
+    "tags": [
+      "movie-musical",
+      "feel-good"
+    ],
     "links": [],
     "poster": null
   },
@@ -73,7 +92,11 @@
     "luRating": null,
     "description": "In New York's West Side, two rival gangs clash: the Sharks, led by Bernardo, and the Jets, led by Riff. Former Jet Tony falls in love with Maria, Bernardo's sister.",
     "notes": "",
-    "tags": ["broadway", "classic", "romance"],
+    "tags": [
+      "broadway",
+      "classic",
+      "romance"
+    ],
     "links": [],
     "poster": null
   },
@@ -86,7 +109,11 @@
     "luRating": null,
     "description": "Several well-known fairy tales intertwine — Cinderella, Little Red Riding Hood, Jack and the Beanstalk, Rapunzel — alongside a baker and his wife who hope to start a family but are cursed by a witch.",
     "notes": "",
-    "tags": ["broadway", "sondheim", "fairy-tale"],
+    "tags": [
+      "broadway",
+      "sondheim",
+      "fairy-tale"
+    ],
     "links": [],
     "poster": null
   },
@@ -99,7 +126,11 @@
     "luRating": null,
     "description": "July 1899: young newspaper sellers in New York go on strike, demanding better working conditions from their employer, Joseph Pulitzer.",
     "notes": "",
-    "tags": ["broadway", "history", "disney"],
+    "tags": [
+      "broadway",
+      "history",
+      "disney"
+    ],
     "links": [],
     "poster": null
   },
@@ -112,7 +143,11 @@
     "luRating": null,
     "description": "Inspired by the comic strip Little Orphan Annie: a ten-year-old orphan fights the cruelty of her caretakers until an encounter with billionaire Oliver Warbucks changes her fate.",
     "notes": "",
-    "tags": ["broadway", "classic", "family"],
+    "tags": [
+      "broadway",
+      "classic",
+      "family"
+    ],
     "links": [],
     "poster": null
   },
@@ -125,7 +160,11 @@
     "luRating": null,
     "description": "Professional matchmaker Dolly Levi falls in love with a wealthy merchant and orchestrates a complex web of relationships to achieve her goal.",
     "notes": "",
-    "tags": ["broadway", "classic", "comedy"],
+    "tags": [
+      "broadway",
+      "classic",
+      "comedy"
+    ],
     "links": [],
     "poster": null
   },
@@ -138,7 +177,11 @@
     "luRating": null,
     "description": "The Tony and Olivier Award-winning musical about an extraordinary young girl with an overactive imagination who decides to change her destiny — with astonishing results.",
     "notes": "",
-    "tags": ["west-end", "based-on-book", "family"],
+    "tags": [
+      "west-end",
+      "based-on-book",
+      "family"
+    ],
     "links": [],
     "poster": null
   },
@@ -151,7 +194,11 @@
     "luRating": null,
     "description": "How Aladdin, through the treachery of the Grand Vizier, acquires the magic lamp containing the famous genie — leading him on the most incredible adventure.",
     "notes": "",
-    "tags": ["broadway", "disney", "family"],
+    "tags": [
+      "broadway",
+      "disney",
+      "family"
+    ],
     "links": [],
     "poster": null
   },
@@ -164,9 +211,16 @@
     "luRating": null,
     "description": "A retelling of Aladdin from Jafar's perspective, similar in approach to Wicked. By StarKid Productions.",
     "notes": "",
-    "tags": ["parody", "starkid", "free-on-youtube"],
+    "tags": [
+      "parody",
+      "starkid",
+      "free-on-youtube"
+    ],
     "links": [
-      { "label": "Whole show on YouTube (official)", "url": "https://www.youtube.com/watch?v=-77cUxba-aA" }
+      {
+        "label": "Whole show on YouTube (official)",
+        "url": "https://www.youtube.com/watch?v=-77cUxba-aA"
+      }
     ],
     "poster": null
   },
@@ -179,7 +233,10 @@
     "luRating": null,
     "description": "Inspired by the 1997 animated film: Anya, an amnesiac orphan, hopes to find her family — unknowingly aided by two con artists exploiting her resemblance to the lost princess Anastasia Romanov.",
     "notes": "",
-    "tags": ["broadway", "based-on-film"],
+    "tags": [
+      "broadway",
+      "based-on-film"
+    ],
     "links": [],
     "poster": null
   },
@@ -192,7 +249,12 @@
     "luRating": null,
     "description": "A teenage girl in Indiana wants to take her girlfriend to prom but faces staunch opposition — until a group of eccentric Broadway actors mobilizes to support her and fight the injustice.",
     "notes": "",
-    "tags": ["broadway", "sapphic", "lgbtq", "netflix"],
+    "tags": [
+      "broadway",
+      "sapphic",
+      "lgbtq",
+      "netflix"
+    ],
     "links": [],
     "poster": null
   },
@@ -205,7 +267,11 @@
     "luRating": null,
     "description": "As his 30th birthday approaches, a promising young composer struggles with love, friendship, and the desire to create something extraordinary before time runs out. Jonathan Larson's autobiographical musical, filmed for Netflix.",
     "notes": "",
-    "tags": ["movie-musical", "netflix", "artist-life"],
+    "tags": [
+      "movie-musical",
+      "netflix",
+      "artist-life"
+    ],
     "links": [],
     "poster": null
   },
@@ -218,7 +284,11 @@
     "luRating": null,
     "description": "Based on the life of Diana Spencer. Its Broadway premiere was delayed by the pandemic, so it premiered on Netflix instead, filmed without a live audience.",
     "notes": "",
-    "tags": ["broadway", "netflix", "biography"],
+    "tags": [
+      "broadway",
+      "netflix",
+      "biography"
+    ],
     "links": [],
     "poster": null
   },
@@ -231,7 +301,11 @@
     "luRating": null,
     "description": "Lord Farquaad wants to marry Princess Fiona, but she's imprisoned by a fearsome dragon. He needs a brave knight — and the ogre Shrek volunteers.",
     "notes": "",
-    "tags": ["broadway", "comedy", "based-on-film"],
+    "tags": [
+      "broadway",
+      "comedy",
+      "based-on-film"
+    ],
     "links": [],
     "poster": null
   },
@@ -244,7 +318,12 @@
     "luRating": null,
     "description": "A young bride-to-be seeks to discover the identity of her father — a secret her mother refuses to reveal. Set to the music of ABBA.",
     "notes": "",
-    "tags": ["west-end", "jukebox", "abba", "feel-good"],
+    "tags": [
+      "west-end",
+      "jukebox",
+      "abba",
+      "feel-good"
+    ],
     "links": [],
     "poster": null
   },
@@ -256,8 +335,13 @@
     "year": 2017,
     "luRating": null,
     "description": "Defying all obstacles, 16-year-old Jamie has the courage to pursue his unique dream of becoming a drag queen, in an uplifting true story that became a hit West End musical.",
-    "notes": "O filme tá na categoria de visual media também!",
-    "tags": ["west-end", "lgbtq", "drag", "true-story"],
+    "notes": "The movie is in the visual media category too!",
+    "tags": [
+      "west-end",
+      "lgbtq",
+      "drag",
+      "true-story"
+    ],
     "links": [],
     "poster": null
   },
@@ -270,7 +354,10 @@
     "luRating": null,
     "description": "Evan Hansen, a 17-year-old with social anxiety, writes letters to himself on his therapist's advice. When classmate Connor dies by suicide, Evan gets caught in a web of lies after falsely claiming to have been Connor's best friend.",
     "notes": "",
-    "tags": ["broadway", "heavy-themes"],
+    "tags": [
+      "broadway",
+      "heavy-themes"
+    ],
     "links": [],
     "poster": null
   },
@@ -283,7 +370,11 @@
     "luRating": null,
     "description": "1920s Chicago: Roxie Hart, who has killed her lover, meets Velma Kelly, a cabaret star who murdered her husband and sister. Roxie dreams of achieving Velma's fame.",
     "notes": "",
-    "tags": ["broadway", "classic", "crime"],
+    "tags": [
+      "broadway",
+      "classic",
+      "crime"
+    ],
     "links": [],
     "poster": null
   },
@@ -296,7 +387,11 @@
     "luRating": null,
     "description": "The story of two opposites: Elphaba, the Wicked Witch of the West, and Glinda, the Good Witch — a friendship tested by personality clashes, romantic rivalry, and the corrupt government of the Wizard of Oz.",
     "notes": "",
-    "tags": ["broadway", "fantasy", "friendship"],
+    "tags": [
+      "broadway",
+      "fantasy",
+      "friendship"
+    ],
     "links": [],
     "poster": null
   },
@@ -309,7 +404,11 @@
     "luRating": null,
     "description": "Kim, a young girl working at Dreamland, a seedy bar frequented by American soldiers, meets and falls passionately in love with Chris, a U.S. GI — before war separates them.",
     "notes": "",
-    "tags": ["west-end", "tragedy", "war"],
+    "tags": [
+      "west-end",
+      "tragedy",
+      "war"
+    ],
     "links": [],
     "poster": null
   }
