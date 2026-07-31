@@ -46,6 +46,21 @@ python3 scripts/enrich.py
 
 It fills in missing `poster` and `description` fields (never touches your notes, ratings, or tags). Posters are hotlinked from TMDB's CDN, so the repo stays tiny.
 
+## Rec lists (curated groups for friends)
+
+`data/lists.json` holds named lists that group existing recs by their `id` — no tags involved, and lists can mix categories:
+
+```json
+{
+  "id": "gabi",
+  "title": "listinha pro gabi 💜",
+  "description": "optional blurb shown at the top",
+  "items": ["bad-buddy", "heartstopper", "hamilton"]
+}
+```
+
+Items appear in the order you write them ("Curated order" sort). Every list gets a shareable link: `https://<your-site>/#list=gabi` opens the site with that list already selected. Delete an entry from `lists.json` any time; the recs themselves are untouched.
+
 ## Adding a new category
 
 1. Create `data/music.json` (same entry format — omit fields that don't apply).

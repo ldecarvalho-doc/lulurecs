@@ -45,6 +45,24 @@
   nav.cats button.active { border-color: var(--accent); background: var(--surface-2); }
   nav.cats button:disabled { opacity: 0.4; cursor: default; }
 
+  .lists {
+    max-width: 1100px; margin: 12px auto 0; padding: 0 20px;
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .lists .lists-label { color: var(--text-dim); font-size: 0.8rem; }
+  .lists button {
+    background: transparent; border: 1px dashed var(--accent); color: var(--accent);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 0.88rem;
+  }
+  .lists button.active { background: var(--surface-2); border-style: solid; }
+  .list-header {
+    background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius);
+    padding: 14px 18px; margin-bottom: 14px; display: none;
+  }
+  .list-header h2 { font-size: 1.1rem; }
+  .list-header p { color: var(--text-dim); font-size: 0.9rem; margin: 4px 0 6px; }
+  .list-header a.clear { color: var(--accent-2); font-size: 0.85rem; text-decoration: none; }
+
   .controls {
     max-width: 1100px; margin: 20px auto 0; padding: 0 20px;
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
@@ -158,12 +176,14 @@
 </header>
 
 <nav class="cats" id="cats"></nav>
+<div class="lists" id="lists"></div>
 
 <div class="controls">
   <input type="search" id="search" placeholder="Search titles, notes, descriptions…">
   <select id="typeFilter"><option value="">All types</option></select>
   <select id="countryFilter"><option value="">All countries</option></select>
   <select id="sort">
+    <option value="curated">Sort: Curated order</option>
     <option value="rating">Sort: Lu's rating</option>
     <option value="title">Sort: Title A–Z</option>
     <option value="year-desc">Sort: Newest</option>
@@ -175,6 +195,7 @@
 <div class="layout">
   <aside class="tagbar" id="tagbar" aria-label="Filter by tag"></aside>
   <div class="content">
+    <div class="list-header" id="listHeader"></div>
     <div class="count" id="count"></div>
     <main class="grid" id="grid"></main>
   </div>
@@ -201,6 +222,7 @@
   ];
 
   let categories = [], items = [], activeCat = null;
+  let lists = [], activeList = null, allItemsCache = null;
   const state = { search: "", type: "", country: "", tags: new Set(), favsOnly: false, sort: "rating" };
 
   const $ = id => document.getElementById(id);
@@ -224,9 +246,49 @@
 
   async function selectCategory(cat, btn) {
     activeCat = cat;
+    activeList = null;
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
     [...$("cats").children].forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
+    state.sort = "rating"; $("sort").value = "rating";
     items = await (await fetch(cat.file)).json();
+    buildFilters();
+    render();
+  }
+
+  async function loadLists() {
+    try { lists = await (await fetch("data/lists.json")).json(); } catch { lists = []; }
+    const bar = $("lists");
+    if (!lists.length) { bar.style.display = "none"; return; }
+    bar.innerHTML = '<span class="lists-label">✨ rec lists:</span>';
+    lists.forEach(l => {
+      const b = document.createElement("button");
+      b.textContent = l.title;
+      b.dataset.listId = l.id;
+      b.onclick = () => (activeList && activeList.id === l.id) ? selectCategory(categories.find(c => c.enabled), $("cats").children[0]) : selectList(l);
+      bar.appendChild(b);
+    });
+  }
+
+  async function allItems() {
+    if (!allItemsCache) {
+      const enabled = categories.filter(c => c.enabled);
+      const files = await Promise.all(enabled.map(c => fetch(c.file).then(r => r.json())));
+      allItemsCache = files.flat();
+    }
+    return allItemsCache;
+  }
+
+  async function selectList(l) {
+    activeList = l;
+    activeCat = null;
+    const all = await allItems();
+    items = l.items.map(id => all.find(i => i.id === id)).filter(Boolean);
+    [...$("cats").children].forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#lists button").forEach(b => b.classList.toggle("active", b.dataset.listId === l.id));
+    history.replaceState(null, "", "#list=" + l.id);
+    state.sort = "curated"; $("sort").value = "curated";
     buildFilters();
     render();
   }
@@ -274,6 +336,7 @@
       return true;
     });
     const s = state.sort;
+    if (s === "curated") return out;
     out.sort((a, b) => {
       if (s === "title") return a.title.localeCompare(b.title);
       if (s === "year-desc") return (b.year || 0) - (a.year || 0);
@@ -292,6 +355,19 @@
 
   function render() {
     const favs = getFavs();
+    const lh = $("listHeader");
+    if (activeList) {
+      lh.style.display = "block";
+      lh.innerHTML = `<h2>✨ ${activeList.title}</h2>` +
+        (activeList.description ? `<p>${activeList.description}</p>` : "") +
+        `<a class="clear" href="#">← back to all recs</a>`;
+      lh.querySelector("a.clear").onclick = e => {
+        e.preventDefault();
+        selectCategory(categories.find(c => c.enabled), $("cats").children[0]);
+      };
+    } else {
+      lh.style.display = "none";
+    }
     document.querySelectorAll("#tagbar .chip").forEach(c => c.classList.toggle("active", state.tags.has(c.dataset.tag)));
     $("favToggle").classList.toggle("active", state.favsOnly);
     const list = filtered();
@@ -345,7 +421,16 @@
   $("sort").onchange = e => { state.sort = e.target.value; render(); };
   $("favToggle").onclick = () => { state.favsOnly = !state.favsOnly; render(); };
 
-  loadCategories().catch(err => {
+  (async () => {
+    $("sort").value = state.sort;
+    await loadCategories();
+    await loadLists();
+    const m = location.hash.match(/list=([\w-]+)/);
+    if (m) {
+      const l = lists.find(x => x.id === m[1]);
+      if (l) await selectList(l);
+    }
+  })().catch(err => {
     $("grid").innerHTML = `<div class="empty">Couldn't load data (${err.message}).<br>If you opened this file directly, serve it instead: <code>python3 -m http.server</code></div>`;
   });
 })();
