@@ -368,9 +368,13 @@
 
   function stars(n) {
     if (!n) return '<span class="stars off" title="Not rated yet">·····</span>';
-    let s = "";
-    for (let i = 1; i <= 5; i++) s += i <= n ? "★" : '<span class="off">★</span>';
-    return `<span class="stars" title="Lu's rating: ${n}/5">${s}</span>`;
+    const full = Math.floor(n), frac = n - full;
+    let s = "★".repeat(full);
+    if (frac >= 0.25) s += "½";
+    const shown = full + (frac >= 0.25 ? 1 : 0);
+    s += '<span class="off">' + "★".repeat(Math.max(0, 5 - shown)) + "</span>";
+    return `<span class="stars" title="Lu's rating: ${n}/5">${s}</span>` +
+      (frac ? ` <span title="Lu's rating">${n}</span>` : "");
   }
 
   function render() {

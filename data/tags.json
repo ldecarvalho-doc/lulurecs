@@ -1,7 +1,7 @@
 {
   "bl": {
     "label": "BL (Boys' Love)",
-    "description": "A genre of Asian dramas (Thailand, Taiwan, Japan, Korea, the Philippines...) centered on romance between men. Fair warning before you start: the cultural codes are different! Expect blatant product placement, cheesy soundtracks, cartoonish sound effects, and occasionally questionable acting. The genre is often more caricature than realistic representation — lots of fanservice — but there are real pearls in there, and the good ones subvert all of it. Survive the first episodes and trust the process."
+    "description": "A genre of Asian dramas (Thailand, Taiwan, Japan, Korea, the Philippines...) centered on romance between men. Fair warning before you start: the cultural codes are different! Expect blatant product placement, cheesy soundtracks, cartoonish sound effects, and occasionally questionable acting. Often you'll see the same pair of actors in dramas together, as they have assigned pairs. I find this both good and bad: it allows them to build a lot of trust and complicity with their scene partners and you can tell that the chemistry and their acting together is usually improved in their next project. The bad side is that this system exists to encourage the shipping of real people that sometimes results in unhealthy parasocial relationships and expectations. It also limits the actors to the BL genre. The genre is often more caricature than realistic representation — lots of fanservice — but there are real pearls in there, and the good ones subvert all of it. Survive the first episodes and trust the process. Also, in Thai you have officially registered \"nicknames\", which is why characters will often have names like Bible, Earth, Gun, Pond, and other random words. This is not their name, it's their nickname and this is normal in Thailand."
   },
   "gl": {
     "label": "GL (Girls' Love)",
@@ -14,5 +14,49 @@
   "free-on-youtube": {
     "label": "Free on YouTube",
     "description": "Full episodes officially and freely available on YouTube, usually with English subtitles. Thai studios like GMMTV upload everything — bless them."
+  },
+  "bl-royalty": {
+    "label": "BL royalty",
+    "description": "The crown jewels of the genre — the essentials. If you only ever watch a few BLs, make it these."
+  },
+  "gmmtv": {
+    "label": "GMMTV",
+    "description": "The giant Thai studio behind most modern Thai BLs. They manage the actor pairs, produce a dozen shows a year, and upload full episodes to YouTube for free with subtitles."
+  },
+  "director-paof": {
+    "label": "Director: P'Aof",
+    "description": "P'Aof Noppharnach — my favorite director. He makes the tearjerkers, the grounded ones, the ones with the best acting (Bad Buddy, A Tale of a Thousand Stars, Moonlight Chicken, Last Twilight). He's very good friends with P'Jojo — they have an extended friend group who are all gay and have reacted to some of their shows together."
+  },
+  "director-pjojo": {
+    "label": "Director: P'Jojo",
+    "description": "P'Jojo doesn't lean into the BL tropes and clichés — his shows are raw, messy, and honest (Only Friends, The Heart Killers). He also tends to work with the good actors. Good friends with P'Aof."
+  },
+  "director-pgolf": {
+    "label": "Director: P'Golf",
+    "description": "P'Golf always appears in their own shows — in three different ones they show up as 'P'Golf', an LGBT café owner. Look for the cameo."
+  },
+  "director-pnuchy": {
+    "label": "Director: P'Nuchy",
+    "description": "Anucha 'Nuchy' Boonyawatana — a trans woman director engaged in LGBTQ+ causes. The director who least adapts to the BL format and loves pushing the envelope. She has high standards and so far has only worked with OffGun (I think)."
+  },
+  "political": {
+    "label": "Politically engaged",
+    "description": "Dramas that are used to protest something or bring awareness to an issue — shows that talk about LGBTQ+ and social justice directly instead of just using it for views."
+  },
+  "lus-favorites": {
+    "label": "Lu's favorites",
+    "description": "My personal pantheon. If it has this tag, I will defend it with my life."
+  },
+  "casual-watching": {
+    "label": "Casual watching",
+    "description": "Background shows — the ones I put on while doing other things. Low commitment, no plot stress."
+  },
+  "lots-of-sex": {
+    "label": "Content note: lots of sex",
+    "description": "These ones are spicy. Maybe don't watch on the bus."
+  },
+  "disability": {
+    "label": "Disability representation",
+    "description": "Shows with meaningful disability representation in main storylines — not just as a plot device."
   }
 }
