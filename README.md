@@ -79,6 +79,12 @@ Items appear in the order you write them ("Curated order" sort). Every list gets
 1. Create `data/music.json` (same entry format — omit fields that don't apply).
 2. In `data/categories.json`, set that category's `"enabled": true`.
 
+## Admin page
+
+`admin.html` (open `https://<your-site>/admin.html`) lets you add/edit/delete recs and manage lists from the browser. It commits directly to this repo via the GitHub API, so every change is still a normal git commit and Pages redeploys automatically.
+
+Setup (once): GitHub → Settings → Developer settings → Fine-grained personal access tokens → Generate new token. Repository access: **only lulurecs**. Permissions: **Contents → Read and write**. Paste the token into the admin page — it's stored only in your browser's localStorage (never committed). Don't share the token; anyone holding it can edit the site.
+
 ## Local preview
 
 ```bash

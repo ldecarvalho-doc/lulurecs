@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>lulurecs · admin</title>
+<style>
+  :root {
+    --bg: #12101a; --surface: #1c1927; --surface-2: #262234; --border: #363048;
+    --text: #efecf6; --text-dim: #a49cba; --accent: #c084fc; --accent-2: #f472b6;
+    --ok: #4ade80; --warn: #facc15; --err: #fb7185; --radius: 12px;
+    --rainbow: linear-gradient(90deg, #f87171, #fb923c, #facc15, #4ade80, #60a5fa, #c084fc);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.5; }
+  .rainbow-bar { height: 4px; background: var(--rainbow); }
+  main { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+  h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  h1 a { color: var(--text-dim); text-decoration: none; font-size: 0.9rem; font-weight: 400; }
+  h2 { font-size: 1.05rem; margin: 22px 0 10px; }
+  p.dim, .dim { color: var(--text-dim); font-size: 0.88rem; }
+  input, select, textarea, button {
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 0.92rem; font-family: inherit;
+  }
+  textarea { width: 100%; min-height: 70px; resize: vertical; }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #1a1025; font-weight: 600; border-color: var(--accent); }
+  button.danger { color: var(--err); }
+  button:disabled { opacity: 0.45; cursor: default; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 16px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid2 .full { grid-column: 1 / -1; }
+  label { display: block; font-size: 0.78rem; color: var(--text-dim); margin: 8px 0 3px; }
+  label input, label select { width: 100%; }
+  .tabs { display: flex; gap: 8px; margin: 18px 0 14px; }
+  .tabs button.active { border-color: var(--accent); background: var(--surface-2); }
+  ul.plain { list-style: none; }
+  ul.plain li {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+    border-bottom: 1px solid var(--border); font-size: 0.92rem;
+  }
+  ul.plain li:last-child { border-bottom: none; }
+  ul.plain .grow { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ul.plain small { color: var(--text-dim); }
+  .mini { padding: 3px 9px; font-size: 0.8rem; }
+  #status { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface-2); border-top: 1px solid var(--border); padding: 10px 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  #status .msg { font-size: 0.88rem; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  .hidden { display: none !important; }
+  code { background: var(--surface-2); border-radius: 4px; padding: 1px 5px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="rainbow-bar"></div>
+<main>
+  <h1>lulurecs · admin <a href="index.html">← back to site</a></h1>
+  <p class="dim">Changes are committed to GitHub; the live site updates ~1 minute later.</p>
+
+  <!-- TOKEN GATE -->
+  <section id="gate" class="card">
+    <h2>Connect to GitHub</h2>
+    <p class="dim">Paste a fine-grained personal access token with <b>Contents: Read and write</b> permission on the <code>lulurecs</code> repo only. It is stored in this browser only (localStorage) — never in the repo.</p>
+    <div class="row" style="margin-top:10px">
+      <input type="password" id="tokenInput" placeholder="github_pat_…" style="flex:1; min-width:220px">
+      <button class="primary" id="connectBtn">Connect</button>
+    </div>
+    <p class="dim" id="gateMsg" style="margin-top:8px"></p>
+  </section>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+    <div class="row" style="justify-content:space-between">
+      <div class="tabs">
+        <button id="tabRecs" class="active">Recs</button>
+        <button id="tabLists">Lists</button>
+      </div>
+      <button class="mini" id="forgetBtn" title="Remove token from this browser">Forget token</button>
+    </div>
+
+    <!-- RECS TAB -->
+    <section id="recsPane">
+      <div class="row">
+        <select id="catSelect"></select>
+        <button id="newRecBtn">+ New rec</button>
+      </div>
+      <div class="card" style="margin-top:12px; padding:6px 12px">
+        <ul class="plain" id="recList"></ul>
+      </div>
+
+      <div class="card hidden" id="recForm">
+        <h2 id="recFormTitle">New rec</h2>
+        <div class="grid2">
+          <label>Title<input id="f_title"></label>
+          <label>ID (slug)<input id="f_id"></label>
+          <label>Type
+            <input id="f_type" list="typeOpts">
+            <datalist id="typeOpts"><option>series</option><option>movie</option><option>musical</option><option>list</option><option>book</option><option>album</option><option>channel</option></datalist>
+          </label>
+          <label>Country (ISO code, e.g. TH)<input id="f_country" maxlength="2"></label>
+          <label>Year<input id="f_year" type="number"></label>
+          <label>Lu's rating (0.25 steps, empty = unrated)<input id="f_rating" type="number" step="0.25" min="0" max="5"></label>
+          <label class="full">Description<textarea id="f_desc"></textarea></label>
+          <label class="full">Lu's notes<textarea id="f_notes"></textarea></label>
+          <label class="full">Tags (comma-separated)<input id="f_tags"></label>
+          <label class="full">Links (one per line: Label | https://url)<textarea id="f_links" placeholder="Watch on YouTube | https://youtube.com/..."></textarea></label>
+          <label class="full">Poster URL (optional)<input id="f_poster"></label>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="primary" id="saveRecBtn">Save rec</button>
+          <button id="cancelRecBtn">Cancel</button>
+          <span class="dim" id="recFormMsg"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- LISTS TAB -->
+    <section id="listsPane" class="hidden">
+      <div class="row">
+        <select id="listSelect"></select>
+        <button id="newListBtn">+ New list</button>
+        <button class="danger mini" id="deleteListBtn">Delete list</button>
+      </div>
+      <div class="card hidden" id="listForm" style="margin-top:12px">
+        <div class="grid2">
+          <label>Title<input id="l_title"></label>
+          <label>ID (slug — used in the share link)<input id="l_id"></label>
+          <label class="full">Description<input id="l_desc"></label>
+        </div>
+        <h2>Items (in order)</h2>
+        <ul class="plain" id="listItems"></ul>
+        <div class="row" style="margin-top:10px">
+          <select id="addItemSelect" style="flex:1; min-width:200px"></select>
+          <button class="mini" id="addItemBtn">Add</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="primary" id="saveListBtn">Save list</button>
+          <span class="dim" id="listShareLink"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- COMMIT BAR -->
+<div id="status" class="hidden">
+  <span class="msg" id="dirtyMsg"></span>
+  <input id="commitMsg" placeholder="Commit message (optional)" style="flex:1; min-width:180px">
+  <button class="primary" id="commitBtn">Commit to GitHub</button>
+  <button class="mini" id="discardBtn">Discard changes</button>
+  <span class="msg" id="commitStatus"></span>
+</div>
+
+<script>
+(() => {
+  const OWNER = "ldecarvalho-doc", REPO = "lulurecs", BRANCH = "main";
+  const API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
+  const TOKEN_KEY = "lulurecs:pat";
+  const $ = id => document.getElementById(id);
+
+  let token = localStorage.getItem(TOKEN_KEY) || "";
+  // files: path -> { data, sha, dirty }
+  const files = {};
+  let categories = [], activeCatPath = null, editingId = null, editingListId = null;
+
+  const b64e = s => btoa(unescape(encodeURIComponent(s)));
+  const b64d = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ""))));
+  const slug = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+  async function gh(path, opts = {}) {
+    const r = await fetch(API + path + (opts.method ? "" : `?ref=${BRANCH}&t=${Date.now()}`), {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+      ...opts
+    });
+    if (!r.ok && r.status !== 404) throw new Error(`GitHub ${r.status}: ${(await r.json()).message || ""}`);
+    return r.status === 404 ? null : r.json();
+  }
+
+  async function loadFile(path) {
+    const res = await gh(path);
+    files[path] = res
+      ? { data: JSON.parse(b64d(res.content)), sha: res.sha, dirty: false }
+      : { data: [], sha: null, dirty: false };
+    return files[path];
+  }
+
+  function markDirty(path) { files[path].dirty = true; renderStatus(); }
+  const dirtyPaths = () => Object.keys(files).filter(p => files[p].dirty);
+
+  // ---------- INIT ----------
+  async function boot() {
+    $("gateMsg").textContent = "Connecting…";
+    try {
+      await loadFile("data/categories.json");
+      categories = files["data/categories.json"].data.filter(c => c.enabled);
+      await Promise.all([...categories.map(c => loadFile(c.file)), loadFile("data/lists.json")]);
+    } catch (e) {
+      $("gateMsg").innerHTML = `<span class="err">${e.message}</span> — check the token and its permissions.`;
+      return;
+    }
+    localStorage.setItem(TOKEN_KEY, token);
+    $("gate").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    $("catSelect").innerHTML = categories.map(c => `<option value="${c.file}">${c.emoji} ${c.name}</option>`).join("");
+    activeCatPath = categories[0].file;
+    renderRecs(); renderListSelect(); renderStatus();
+  }
+
+  // ---------- RECS ----------
+  const allEntries = () => categories.flatMap(c => files[c.file].data);
+
+  function renderRecs() {
+    const list = files[activeCatPath].data;
+    $("recList").innerHTML = list.map(e => `
+      <li><span class="grow"><b>${e.title}</b> <small>· ${e.id} · ${e.luRating ?? "unrated"}★</small></span>
+      <button class="mini" data-edit="${e.id}">Edit</button>
+      <button class="mini danger" data-del="${e.id}">Delete</button></li>`).join("") ||
+      '<li class="dim">No entries yet.</li>';
+    $("recList").querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openRecForm(b.dataset.edit));
+    $("recList").querySelectorAll("[data-del]").forEach(b => b.onclick = () => deleteRec(b.dataset.del));
+  }
+
+  function openRecForm(id) {
+    editingId = id || null;
+    const e = id ? files[activeCatPath].data.find(x => x.id === id) : null;
+    $("recFormTitle").textContent = e ? `Edit: ${e.title}` : "New rec";
+    $("f_title").value = e?.title || ""; $("f_id").value = e?.id || "";
+    $("f_type").value = e?.type || "series"; $("f_country").value = e?.country || "";
+    $("f_year").value = e?.year || ""; $("f_rating").value = e?.luRating ?? "";
+    $("f_desc").value = e?.description || ""; $("f_notes").value = e?.notes || "";
+    $("f_tags").value = (e?.tags || []).join(", ");
+    $("f_links").value = (e?.links || []).map(l => `${l.label} | ${l.url}`).join("\n");
+    $("f_poster").value = e?.poster || "";
+    $("recFormMsg").textContent = "";
+    $("recForm").classList.remove("hidden");
+    $("f_title").focus();
+  }
+
+  function saveRec() {
+    const title = $("f_title").value.trim();
+    if (!title) return $("recFormMsg").textContent = "Title is required.";
+    const id = ($("f_id").value.trim() || slug(title));
+    const list = files[activeCatPath].data;
+    if (!editingId && allEntries().some(e => e.id === id))
+      return $("recFormMsg").textContent = `id "${id}" already exists.`;
+    const entry = {
+      id, title,
+      type: $("f_type").value.trim() || "series",
+      country: $("f_country").value.trim().toUpperCase(),
+      year: +$("f_year").value || null,
+      luRating: $("f_rating").value === "" ? null : +$("f_rating").value,
+      description: $("f_desc").value.trim(),
+      notes: $("f_notes").value.trim(),
+      tags: $("f_tags").value.split(",").map(t => slug(t)).filter(Boolean),
+      links: $("f_links").value.split("\n").map(l => {
+        const [label, ...rest] = l.split("|");
+        const url = rest.join("|").trim();
+        return label.trim() && url ? { label: label.trim(), url } : null;
+      }).filter(Boolean),
+      poster: $("f_poster").value.trim() || null
+    };
+    const i = list.findIndex(e => e.id === editingId);
+    if (i >= 0) list[i] = entry; else list.push(entry);
+    markDirty(activeCatPath);
+    $("recForm").classList.add("hidden");
+    renderRecs();
+  }
+
+  function deleteRec(id) {
+    const e = files[activeCatPath].data.find(x => x.id === id);
+    if (!confirm(`Delete "${e.title}"? It will also be removed from any lists.`)) return;
+    files[activeCatPath].data = files[activeCatPath].data.filter(x => x.id !== id);
+    markDirty(activeCatPath);
+    const lists = files["data/lists.json"].data;
+    lists.forEach(l => {
+      if (l.items.includes(id)) { l.items = l.items.filter(x => x !== id); markDirty("data/lists.json"); }
+    });
+    renderRecs();
+  }
+
+  // ---------- LISTS ----------
+  const lists = () => files["data/lists.json"].data;
+
+  function renderListSelect() {
+    $("listSelect").innerHTML = lists().map(l => `<option value="${l.id}">${l.title}</option>`).join("") ||
+      "<option value=''>(no lists)</option>";
+    if (editingListId) $("listSelect").value = editingListId;
+  }
+
+  function openListForm(id) {
+    editingListId = id;
+    const l = lists().find(x => x.id === id);
+    if (!l) return $("listForm").classList.add("hidden");
+    $("l_title").value = l.title; $("l_id").value = l.id; $("l_desc").value = l.description || "";
+    renderListItems(l);
+    $("listShareLink").innerHTML = `share: <code>https://${OWNER}.github.io/${REPO}/#list=${l.id}</code>`;
+    $("listForm").classList.remove("hidden");
+  }
+
+  function renderListItems(l) {
+    const all = allEntries();
+    $("listItems").innerHTML = l.items.map((id, i) => {
+      const e = all.find(x => x.id === id);
+      return `<li><span class="grow">${e ? e.title : id + " (?)"}</span>
+        <button class="mini" data-up="${i}" ${i === 0 ? "disabled" : ""}>↑</button>
+        <button class="mini" data-down="${i}" ${i === l.items.length - 1 ? "disabled" : ""}>↓</button>
+        <button class="mini danger" data-rm="${i}">✕</button></li>`;
+    }).join("") || '<li class="dim">Empty list — add items below.</li>';
+    $("listItems").querySelectorAll("[data-up]").forEach(b => b.onclick = () => {
+      const i = +b.dataset.up; [l.items[i - 1], l.items[i]] = [l.items[i], l.items[i - 1]]; renderListItems(l);
+    });
+    $("listItems").querySelectorAll("[data-down]").forEach(b => b.onclick = () => {
+      const i = +b.dataset.down; [l.items[i + 1], l.items[i]] = [l.items[i], l.items[i + 1]]; renderListItems(l);
+    });
+    $("listItems").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => {
+      l.items.splice(+b.dataset.rm, 1); renderListItems(l);
+    });
+    $("addItemSelect").innerHTML = all.filter(e => !l.items.includes(e.id))
+      .map(e => `<option value="${e.id}">${e.title}</option>`).join("");
+  }
+
+  function saveList() {
+    const l = lists().find(x => x.id === editingListId);
+    if (!l) return;
+    const newId = slug($("l_id").value.trim() || $("l_title").value);
+    l.title = $("l_title").value.trim() || l.title;
+    l.description = $("l_desc").value.trim();
+    l.id = newId || l.id;
+    editingListId = l.id;
+    markDirty("data/lists.json");
+    renderListSelect(); openListForm(l.id);
+  }
+
+  // ---------- COMMIT ----------
+  function renderStatus() {
+    const d = dirtyPaths();
+    $("status").classList.toggle("hidden", !d.length);
+    $("dirtyMsg").innerHTML = `<span class="warn">● unsaved:</span> ${d.map(p => p.split("/").pop()).join(", ")}`;
+    $("commitStatus").textContent = "";
+  }
+
+  async function commit() {
+    const d = dirtyPaths();
+    const msg = $("commitMsg").value.trim() || `admin: update ${d.map(p => p.split("/").pop()).join(", ")}`;
+    $("commitBtn").disabled = true;
+    for (const path of d) {
+      $("commitStatus").textContent = `committing ${path}…`;
+      const f = files[path];
+      const body = { message: msg, branch: BRANCH, content: b64e(JSON.stringify(f.data, null, 2) + "\n") };
+      if (f.sha) body.sha = f.sha;
+      const res = await gh(path, { method: "PUT", body: JSON.stringify(body) })
+        .catch(e => { $("commitStatus").innerHTML = `<span class="err">${e.message}</span>`; return null; });
+      if (!res) { $("commitBtn").disabled = false; return; }
+      f.sha = res.content.sha; f.dirty = false;
+    }
+    $("commitBtn").disabled = false;
+    $("commitMsg").value = "";
+    renderStatus();
+    $("status").classList.remove("hidden");
+    $("commitStatus").innerHTML = '<span class="ok">✓ committed — site updates in ~1 min</span>';
+    setTimeout(renderStatus, 4000);
+  }
+
+  async function discard() {
+    if (!confirm("Discard all unsaved changes and reload from GitHub?")) return;
+    await Promise.all(dirtyPaths().map(loadFile));
+    renderRecs(); renderListSelect();
+    if (editingListId) openListForm(editingListId);
+    renderStatus();
+  }
+
+  // ---------- WIRING ----------
+  $("connectBtn").onclick = () => { token = $("tokenInput").value.trim(); if (token) boot(); };
+  $("tokenInput").onkeydown = e => { if (e.key === "Enter") $("connectBtn").click(); };
+  $("forgetBtn").onclick = () => { localStorage.removeItem(TOKEN_KEY); location.reload(); };
+  $("tabRecs").onclick = () => { $("tabRecs").classList.add("active"); $("tabLists").classList.remove("active"); $("recsPane").classList.remove("hidden"); $("listsPane").classList.add("hidden"); };
+  $("tabLists").onclick = () => { $("tabLists").classList.add("active"); $("tabRecs").classList.remove("active"); $("listsPane").classList.remove("hidden"); $("recsPane").classList.add("hidden"); if (lists().length) openListForm(editingListId || lists()[0].id); };
+  $("catSelect").onchange = e => { activeCatPath = e.target.value; $("recForm").classList.add("hidden"); renderRecs(); };
+  $("newRecBtn").onclick = () => openRecForm(null);
+  $("saveRecBtn").onclick = saveRec;
+  $("cancelRecBtn").onclick = () => $("recForm").classList.add("hidden");
+  $("f_title").oninput = () => { if (!editingId) $("f_id").value = slug($("f_title").value); };
+  $("listSelect").onchange = e => openListForm(e.target.value);
+  $("newListBtn").onclick = () => {
+    const title = prompt("List title? (e.g. recs for gabi)");
+    if (!title) return;
+    const id = slug(title);
+    if (lists().some(l => l.id === id)) return alert("A list with that id already exists.");
+    lists().push({ id, title, description: "", items: [] });
+    markDirty("data/lists.json");
+    renderListSelect(); openListForm(id);
+    $("tabLists").click();
+  };
+  $("deleteListBtn").onclick = () => {
+    const l = lists().find(x => x.id === editingListId);
+    if (!l || !confirm(`Delete list "${l.title}"? (The recs themselves are untouched.)`)) return;
+    files["data/lists.json"].data = lists().filter(x => x.id !== l.id);
+    markDirty("data/lists.json");
+    editingListId = null;
+    renderListSelect();
+    $("listForm").classList.add("hidden");
+  };
+  $("addItemBtn").onclick = () => {
+    const l = lists().find(x => x.id === editingListId);
+    const id = $("addItemSelect").value;
+    if (l && id) { l.items.push(id); renderListItems(l); }
+  };
+  $("saveListBtn").onclick = saveList;
+  $("commitBtn").onclick = commit;
+  $("discardBtn").onclick = discard;
+
+  if (token) { $("tokenInput").value = token; boot(); }
+})();
+</script>
+</body>
+</html>
