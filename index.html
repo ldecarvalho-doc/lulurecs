@@ -301,7 +301,7 @@
   let tagInfo = {}, tagGroups = [], tagCounts = {};
   const COLLAPSE_KEY = "lulurecs:collapsedGroups";
   let collapsed = new Set((() => { try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || []; } catch { return []; } })());
-  const state = { search: "", type: "", country: "", tags: new Set(), favsOnly: false, sort: "rating" };
+  const state = { search: "", type: "", country: "", tags: new Set(), favsOnly: false, sort: "title" };
 
   const $ = id => document.getElementById(id);
   const flag = cc => cc ? cc.toUpperCase().replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0))) : "";
@@ -332,7 +332,7 @@
     [...$("cats").children].forEach(b => b.classList.remove("active"));
     document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    state.sort = "rating"; $("sort").value = "rating";
+    state.sort = "title"; $("sort").value = "title";
     items = await allItems();
     buildFilters();
     render();
@@ -345,7 +345,7 @@
     [...$("cats").children].forEach(b => b.classList.remove("active"));
     document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
-    state.sort = "rating"; $("sort").value = "rating";
+    state.sort = "title"; $("sort").value = "title";
     const all = await allItems();
     items = all.filter(i => (i.categories || []).includes(cat.id));
     buildFilters();

@@ -279,16 +279,19 @@
       return $("recFormMsg").textContent = `id "${id}" already exists.`;
     const checkedCats = [...$("f_categories").querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
     const homeCatId = categories.find(c => c.file === activeCatPath)?.id;
+    const rating = $("f_rating").value === "" ? null : +$("f_rating").value;
+    const tags = $("f_tags").value.split(",").map(t => slug(t)).filter(Boolean);
+    if (rating === 5 && !tags.includes("lus-favorites")) tags.push("lus-favorites");
     const entry = {
       id, title,
       type: $("f_type").value.trim() || "series",
       country: $("f_country").value.trim().toUpperCase(),
       year: +$("f_year").value || null,
-      luRating: $("f_rating").value === "" ? null : +$("f_rating").value,
+      luRating: rating,
       description: $("f_desc").value.trim(),
       notes: $("f_notes").value.trim(),
       categories: checkedCats.length ? checkedCats : (homeCatId ? [homeCatId] : []),
-      tags: $("f_tags").value.split(",").map(t => slug(t)).filter(Boolean),
+      tags,
       links: $("f_links").value.split("\n").map(l => {
         const [label, ...rest] = l.split("|");
         const url = rest.join("|").trim();
