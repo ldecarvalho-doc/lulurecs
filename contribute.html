@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>lulurecs · contributor guide</title>
+<meta name="description" content="How to add recommendations to lulurecs.">
+<style>
+  :root {
+    --bg: #12101a; --surface: #1c1927; --surface-2: #262234; --border: #363048;
+    --text: #efecf6; --text-dim: #a49cba; --accent: #c084fc; --accent-2: #f472b6;
+    --warn: #facc15; --ok: #4ade80; --radius: 14px;
+    --rainbow: linear-gradient(90deg, #f87171, #fb923c, #facc15, #4ade80, #60a5fa, #c084fc);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .rainbow-bar { height: 5px; background: var(--rainbow); }
+  main { max-width: 760px; margin: 0 auto; padding: 34px 20px 80px; }
+  h1 { font-size: 2rem; letter-spacing: -0.5px; }
+  h1 .spark { background: var(--rainbow); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  h2 { font-size: 1.15rem; margin: 30px 0 10px; }
+  h3 { font-size: 0.98rem; margin: 18px 0 6px; color: var(--accent); }
+  p, li { color: var(--text-dim); }
+  p { margin-bottom: 10px; }
+  strong, b { color: var(--text); }
+  a { color: var(--accent); }
+  ul, ol { margin: 8px 0 12px 20px; }
+  li { margin-bottom: 6px; }
+  code {
+    background: var(--surface-2); border-radius: 5px; padding: 1px 6px;
+    font-size: 0.86em; color: var(--text);
+  }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin: 16px 0; }
+  .beta { border-color: var(--warn); }
+  .beta h2 { margin-top: 0; color: var(--warn); font-size: 1rem; }
+  .nav { margin-top: 6px; font-size: 0.9rem; }
+  .nav a { margin-right: 14px; }
+  .step { display: flex; gap: 14px; margin-bottom: 18px; }
+  .step .num {
+    flex: 0 0 30px; height: 30px; border-radius: 50%; background: var(--surface-2);
+    border: 1px solid var(--accent); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem;
+  }
+  .step .body { flex: 1; }
+  .step .body h3 { margin-top: 3px; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+  th { color: var(--text); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  footer { text-align: center; color: var(--text-dim); font-size: 0.82rem; padding: 30px 20px; }
+</style>
+</head>
+<body>
+<div class="rainbow-bar"></div>
+<main>
+  <h1>contributing to lulurecs <span class="spark">✦</span></h1>
+  <p class="nav">
+    <a href="index.html">← back to the site</a>
+    <a href="admin.html">admin page</a>
+    <a href="https://github.com/ldecarvalho-doc/lulurecs" target="_blank" rel="noopener">repo ↗</a>
+  </p>
+
+  <div class="card beta">
+    <h2>⚠️ This is beta — expect it to change</h2>
+    <p>Right now contributing means editing the site's data directly through a browser admin page, backed by GitHub. It works, but it's a homemade setup with rough edges: there's no login, no undo button, and no review step — whatever you save goes live within about a minute.</p>
+    <p>If more people start contributing, this will likely be replaced by something friendlier (proper accounts, or a suggest-and-approve flow where Lu reviews additions before they publish). So: don't get too attached to this workflow, and <b>ask Lu before doing anything drastic</b>.</p>
+  </div>
+
+  <h2>What you'll be able to do</h2>
+  <table>
+    <tr><th>You can</th><th>Please don't</th></tr>
+    <tr>
+      <td>Add new recs, edit descriptions, fix links and typos, add tags, build and edit rec lists.</td>
+      <td>Change or invent <b>Lu's ratings</b> (the stars are her opinion), rewrite her notes, delete entries you didn't add, or edit the site's code.</td>
+    </tr>
+  </table>
+
+  <h2>Getting set up (once, ~5 minutes)</h2>
+
+  <div class="step">
+    <div class="num">1</div>
+    <div class="body">
+      <h3>Get invited</h3>
+      <p>You need a GitHub account (free). Send Lu your username — she'll add you as a collaborator on the repo, and GitHub will email you an invite. Accept it before going further.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">2</div>
+    <div class="body">
+      <h3>Create your access token</h3>
+      <p>This is the password-like string that lets the admin page save on your behalf. On GitHub: <b>Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token (classic)</b>.</p>
+      <ul>
+        <li><b>Note:</b> something like <code>lulurecs admin</code></li>
+        <li><b>Expiration:</b> pick a date — 90 days is sensible</li>
+        <li><b>Scopes:</b> tick <code>repo</code></li>
+      </ul>
+      <p>Copy the token when it appears — GitHub only shows it once. It must be the <b>classic</b> kind: GitHub's newer fine-grained tokens don't work on repos you don't own.</p>
+      <p>⚠️ That token can also reach your own repositories, so treat it like a password: never paste it in a chat, never commit it anywhere, and don't use it on a shared computer. If it ever leaks, delete it on GitHub and make a new one.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="num">3</div>
+    <div class="body">
+      <h3>Connect</h3>
+      <p>Open the <a href="admin.html">admin page</a>, paste your token, hit Connect. It's stored only in your own browser — there's a "Forget token" button when you're done, which is worth using on any computer that isn't yours.</p>
+    </div>
+  </div>
+
+  <h2>Adding a rec</h2>
+  <p>In the <b>Recs</b> tab, pick the category, hit <b>+ New rec</b>, and fill in the form. What matters:</p>
+  <ul>
+    <li><b>Title</b> — the commonly used English title. The id fills itself in.</li>
+    <li><b>Type / country / year</b> — country is a two-letter code (<code>TH</code>, <code>KR</code>, <code>JP</code>), which becomes the little flag.</li>
+    <li><b>Description</b> — a neutral, spoiler-light synopsis in English. Two or three sentences. This is the "what is this" part, not the "is it good" part.</li>
+    <li><b>Notes</b> — the personal take. Since this site is written in Lu's voice, <b>sign yours</b>, e.g. <i>"(Jess) the pacing drags in the middle but the ending destroyed me"</i>.</li>
+    <li><b>Rating</b> — leave this <b>empty</b> unless Lu gave you a number. The stars are hers.</li>
+    <li><b>Tags</b> — comma separated, lowercase, hyphens instead of spaces (<code>slow-burn</code>, not <code>Slow Burn</code>). Reuse tags that already exist rather than inventing near-duplicates; check the sidebar on the main site for what's in use.</li>
+    <li><b>Links</b> — one per line as <code>Label | https://url</code>. <b>Official sources only</b> (the studio's own YouTube channel, Netflix, Viki, iQIYI...), and please actually open the link to confirm it plays. Dead links are the main thing that rots on this site.</li>
+    <li><b>Poster</b> — a TMDB image URL, or leave it blank for a colored placeholder.</li>
+  </ul>
+
+  <h2>Saving your work</h2>
+  <p>Changes stack up locally until you press <b>Commit to GitHub</b> in the bar at the bottom — nothing is live before that. Write a short message describing what you did ("add 3 Taiwanese BLs"), commit, and the site updates in about a minute. A confirmation box gives you a link to check exactly what was saved.</p>
+  <p>A few habits that keep things tidy:</p>
+  <ul>
+    <li>Commit in small batches rather than one giant edit session.</li>
+    <li>If you're adding lots of recs, use the checkboxes and bulk actions to tag them or add them to a list in one go.</li>
+    <li>Refresh the admin page before starting, so you're working from the latest version — several people editing at once can overwrite each other.</li>
+  </ul>
+
+  <h2>If something goes wrong</h2>
+  <p>Don't panic, and don't try to fix it by deleting things. Every save is a git commit, so anything can be restored — tell Lu what happened and roughly when, and it's a one-command undo. Genuinely: breaking something recoverable is fine, quietly leaving it broken is worse.</p>
+
+  <h2>Questions worth asking first</h2>
+  <ul>
+    <li>Adding a whole new category, or renaming tags across lots of entries.</li>
+    <li>Anything that touches entries you didn't write.</li>
+    <li>Whether a show belongs in one category or another — the lines here are deliberate (Korean BL lives with the other BLs, not with the K-dramas).</li>
+  </ul>
+
+  <p style="margin-top:24px">That's it. Thank you for helping — and please keep the notes fun. 💜</p>
+</main>
+<footer>lulurecs · <a href="index.html">the site</a> · <a href="admin.html">admin</a></footer>
+</body>
+</html>

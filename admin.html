@@ -66,7 +66,7 @@
 <body>
 <div class="rainbow-bar"></div>
 <main>
-  <h1>lulurecs · admin <a href="index.html">← back to site</a></h1>
+  <h1>lulurecs · admin <a href="index.html">← back to site</a> <a href="contribute.html">contributor guide</a></h1>
   <p class="dim">Changes are committed to GitHub; the live site updates ~1 minute later.
     · <a id="repoLink" href="#" target="_blank" rel="noopener">repo</a>
     · <a id="commitsLink" href="#" target="_blank" rel="noopener">commit history ↗</a>
@@ -76,7 +76,7 @@
   <!-- TOKEN GATE -->
   <section id="gate" class="card">
     <h2>Connect to GitHub</h2>
-    <p class="dim">Paste a fine-grained personal access token with <b>Contents: Read and write</b> permission on the <code>lulurecs</code> repo only. It is stored in this browser only (localStorage) — never in the repo.</p>
+    <p class="dim">Paste a personal access token. <b>Lu (repo owner):</b> a fine-grained token with <b>Contents: Read and write</b> on <code>lulurecs</code> only. <b>Collaborators:</b> a <b>classic</b> token with the <code>repo</code> scope — fine-grained tokens don't work on repos you don't own. Either way it's stored in this browser only (localStorage), never in the repo. New here? Read the <a href="contribute.html">contributor guide</a>.</p>
     <div class="row" style="margin-top:10px">
       <input type="password" id="tokenInput" placeholder="github_pat_…" style="flex:1; min-width:220px">
       <button class="primary" id="connectBtn">Connect</button>
