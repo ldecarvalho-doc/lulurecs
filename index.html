@@ -17,6 +17,8 @@
     --accent: #c084fc;
     --accent-2: #f472b6;
     --heart: #fb7185;
+    --ok: #4ade80;
+    --err: #fb7185;
     --radius: 14px;
     --rainbow: linear-gradient(90deg, #f87171, #fb923c, #facc15, #4ade80, #60a5fa, #c084fc);
   }
@@ -167,6 +169,39 @@
     display: flex; align-items: center; justify-content: center; color: #fff;
   }
   .fav-btn.faved { color: var(--heart); }
+  .burger-btn {
+    position: absolute; top: 10px; left: 10px; border: none; cursor: pointer;
+    background: rgba(18,16,26,0.65); backdrop-filter: blur(4px);
+    border-radius: 999px; width: 32px; height: 32px; font-size: 1.1rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .burger-btn:hover { background: rgba(18,16,26,0.85); }
+  .action-menu {
+    position: fixed; z-index: 50; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px; width: 240px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+  .action-menu.hidden { display: none; }
+  .action-menu .menu-item {
+    display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text);
+    padding: 8px 6px; border-radius: 6px; cursor: pointer; font-size: 0.9rem;
+  }
+  .action-menu .menu-item:hover { background: var(--surface-2); }
+  .action-menu .menu-hint { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 6px; }
+  .action-menu .menu-check { display: flex; align-items: center; gap: 8px; font-size: 0.88rem; padding: 5px 2px; cursor: pointer; }
+  .action-menu input[type="password"] {
+    width: 100%; margin-bottom: 8px; background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 7px 9px; font-size: 0.85rem;
+  }
+  .action-menu .menu-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .action-menu .menu-btn {
+    flex: 1; background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem;
+  }
+  .action-menu .menu-btn.primary { background: var(--accent); color: #1a1025; border-color: var(--accent); font-weight: 600; }
+  .action-menu .menu-status { font-size: 0.8rem; margin-top: 6px; }
+  .action-menu .ok { color: var(--ok); }
+  .action-menu .err { color: var(--err); }
   .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .card-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .card-top h2 { font-size: 1.08rem; line-height: 1.3; }
@@ -244,6 +279,8 @@
   <a href="https://github.com/ldecarvalho-doc/lulurecs" target="_blank" rel="noopener">source</a>
 </footer>
 
+<div id="actionMenu" class="action-menu hidden"></div>
+
 <script>
 (() => {
   const FAV_KEY = "lulurecs:favorites";
@@ -309,7 +346,8 @@
     document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
     state.sort = "rating"; $("sort").value = "rating";
-    items = await (await fetch(cat.file)).json();
+    const all = await allItems();
+    items = all.filter(i => (i.categories || []).includes(cat.id));
     buildFilters();
     render();
   }
@@ -339,7 +377,9 @@
   async function allItems() {
     if (!allItemsCache) {
       const enabled = categories.filter(c => c.enabled);
-      const files = await Promise.all(enabled.map(c => fetch(c.file).then(r => r.json())));
+      const files = await Promise.all(enabled.map(c =>
+        fetch(c.file).then(r => r.json()).then(arr => arr.map(i => ({ ...i, __file: c.file })))
+      ));
       allItemsCache = files.flat();
     }
     return allItemsCache;
@@ -502,6 +542,7 @@
       card.innerHTML = `
         <div class="poster ${i.poster ? "" : "placeholder"}" style="${posterStyle}">
           ${i.poster ? "" : (i.title[0] || "?")}
+          <button class="burger-btn" title="More actions" aria-label="More actions">⋮</button>
           <button class="fav-btn ${favs.has(i.id) ? "faved" : ""}" title="Save to favorites" aria-label="Toggle favorite">${favs.has(i.id) ? "♥" : "♡"}</button>
         </div>
         <div class="card-body">
@@ -523,12 +564,172 @@
         setFavs(f);
         render();
       };
+      card.querySelector(".burger-btn").onclick = e => {
+        e.stopPropagation();
+        openBurger(i, e.currentTarget);
+      };
       card.querySelectorAll(".card-tags span").forEach(el => {
         el.onclick = () => { state.tags.add(el.dataset.tag); render(); };
       });
       grid.appendChild(card);
     });
   }
+
+  // ---------- QUICK-EDIT (burger menu: Add to list / Add to category) ----------
+  const OWNER = "ldecarvalho-doc", REPO = "lulurecs", BRANCH = "main";
+  const GH_API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
+  const PAT_KEY = "lulurecs:pat";
+  const b64e = s => btoa(unescape(encodeURIComponent(s)));
+  const b64d = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ""))));
+
+  async function ghGet(path) {
+    const token = localStorage.getItem(PAT_KEY) || "";
+    const r = await fetch(GH_API + path + `?ref=${BRANCH}&t=${Date.now()}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" }
+    });
+    if (!r.ok) throw new Error(`GitHub ${r.status} — check your token`);
+    return r.json();
+  }
+  async function ghPut(path, dataArr, sha, message) {
+    const token = localStorage.getItem(PAT_KEY) || "";
+    const body = { message, branch: BRANCH, content: b64e(JSON.stringify(dataArr, null, 2) + "\n") };
+    if (sha) body.sha = sha;
+    const r = await fetch(GH_API + path, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).message || `GitHub ${r.status}`);
+    return r.json();
+  }
+
+  let menuTarget = null, menuBtn = null;
+
+  function closeMenu() { $("actionMenu").classList.add("hidden"); menuTarget = null; menuBtn = null; }
+
+  function positionMenu(btn) {
+    const menu = $("actionMenu");
+    const r = btn.getBoundingClientRect();
+    const w = 240;
+    let left = Math.min(r.left, window.innerWidth - w - 12);
+    menu.style.left = Math.max(10, left) + "px";
+    menu.style.top = Math.min(r.bottom + 6, window.innerHeight - 60) + "px";
+  }
+
+  function openBurger(item, btn) {
+    menuTarget = item; menuBtn = btn;
+    const menu = $("actionMenu");
+    const token = localStorage.getItem(PAT_KEY);
+    if (!token) {
+      menu.innerHTML = `<p class="menu-hint">Connect your token to add to lists or categories.</p>
+        <input type="password" id="menuTokenInput" placeholder="github_pat_…">
+        <div class="menu-actions">
+          <button class="menu-btn primary" id="menuConnectBtn">Connect</button>
+          <button class="menu-btn" id="menuCancel">Cancel</button>
+        </div>`;
+      menu.querySelector("#menuCancel").onclick = closeMenu;
+      menu.querySelector("#menuConnectBtn").onclick = () => {
+        const t = menu.querySelector("#menuTokenInput").value.trim();
+        if (!t) return;
+        localStorage.setItem(PAT_KEY, t);
+        openBurger(item, btn);
+      };
+    } else {
+      menu.innerHTML = `
+        <button class="menu-item" id="menuAddList">＋ Add to list</button>
+        <button class="menu-item" id="menuAddCat">🏷️ Add to category</button>
+        <button class="menu-item" id="menuForget">Forget token</button>`;
+      menu.querySelector("#menuAddList").onclick = showListPicker;
+      menu.querySelector("#menuAddCat").onclick = showCategoryPicker;
+      menu.querySelector("#menuForget").onclick = () => { localStorage.removeItem(PAT_KEY); closeMenu(); };
+    }
+    positionMenu(btn);
+    menu.classList.remove("hidden");
+  }
+
+  function showListPicker() {
+    const menu = $("actionMenu"), item = menuTarget;
+    if (!lists.length) {
+      menu.innerHTML = `<p class="menu-hint">No lists yet — create one in Admin first.</p>
+        <div class="menu-actions"><button class="menu-btn" id="menuCancel">Close</button></div>`;
+      menu.querySelector("#menuCancel").onclick = closeMenu;
+      return;
+    }
+    menu.innerHTML = `<p class="menu-hint">Add "${item.title}" to:</p>` +
+      lists.map(l => `<label class="menu-check"><input type="checkbox" value="${l.id}" ${l.items.includes(item.id) ? "checked" : ""}> ${l.title}</label>`).join("") +
+      `<div class="menu-actions"><button class="menu-btn primary" id="menuSave">Save</button><button class="menu-btn" id="menuCancel">Cancel</button></div>
+       <p class="menu-status" id="menuStatus"></p>`;
+    menu.querySelector("#menuCancel").onclick = closeMenu;
+    menu.querySelector("#menuSave").onclick = saveListMembership;
+  }
+
+  async function saveListMembership() {
+    const menu = $("actionMenu"), item = menuTarget;
+    const checked = new Set([...menu.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value));
+    menu.querySelector("#menuStatus").textContent = "Saving…";
+    try {
+      const res = await ghGet("data/lists.json");
+      const data = JSON.parse(b64d(res.content));
+      data.forEach(l => {
+        const has = l.items.includes(item.id);
+        const want = checked.has(l.id);
+        if (want && !has) l.items.push(item.id);
+        if (!want && has) l.items = l.items.filter(x => x !== item.id);
+      });
+      await ghPut("data/lists.json", data, res.sha, `Update list membership for ${item.title}`);
+      lists = data;
+      menu.querySelector("#menuStatus").innerHTML = '<span class="ok">✓ saved — live in ~1 min</span>';
+      setTimeout(closeMenu, 1200);
+    } catch (e) {
+      menu.querySelector("#menuStatus").innerHTML = `<span class="err">${e.message}</span>`;
+    }
+  }
+
+  function showCategoryPicker() {
+    const menu = $("actionMenu"), item = menuTarget;
+    const enabled = categories.filter(c => c.enabled);
+    menu.innerHTML = `<p class="menu-hint">Show "${item.title}" under:</p>` +
+      enabled.map(c => `<label class="menu-check"><input type="checkbox" value="${c.id}" ${(item.categories || []).includes(c.id) ? "checked" : ""}> ${c.emoji} ${c.name}</label>`).join("") +
+      `<div class="menu-actions"><button class="menu-btn primary" id="menuSave">Save</button><button class="menu-btn" id="menuCancel">Cancel</button></div>
+       <p class="menu-status" id="menuStatus"></p>`;
+    menu.querySelector("#menuCancel").onclick = closeMenu;
+    menu.querySelector("#menuSave").onclick = saveCategoryMembership;
+  }
+
+  async function saveCategoryMembership() {
+    const menu = $("actionMenu"), item = menuTarget;
+    const checked = [...menu.querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+    if (!checked.length) { menu.querySelector("#menuStatus").innerHTML = '<span class="err">Pick at least one category.</span>'; return; }
+    menu.querySelector("#menuStatus").textContent = "Saving…";
+    try {
+      const res = await ghGet(item.__file);
+      const data = JSON.parse(b64d(res.content));
+      const entry = data.find(e => e.id === item.id);
+      if (!entry) throw new Error("Entry not found in its home file");
+      entry.categories = checked;
+      await ghPut(item.__file, data, res.sha, `Update categories for ${item.title}`);
+      item.categories = checked;
+      allItemsCache = null;
+      menu.querySelector("#menuStatus").innerHTML = '<span class="ok">✓ saved — live in ~1 min</span>';
+      setTimeout(async () => {
+        closeMenu();
+        const activeBtn = document.querySelector("#cats button.active") || document.querySelector("#cats button");
+        if (activeList) await selectList(activeList);
+        else if (activeCat && activeCat.id === "__all__") await selectAll(activeBtn);
+        else if (activeCat) await selectCategory(activeCat, activeBtn);
+      }, 900);
+    } catch (e) {
+      menu.querySelector("#menuStatus").innerHTML = `<span class="err">${e.message}</span>`;
+    }
+  }
+
+  document.addEventListener("click", e => {
+    const menu = $("actionMenu");
+    if (!menu.classList.contains("hidden") && !menu.contains(e.target) && !e.target.classList.contains("burger-btn")) {
+      closeMenu();
+    }
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
 
   $("search").oninput = e => { state.search = e.target.value; render(); };
   $("typeFilter").onchange = e => { state.type = e.target.value; render(); };

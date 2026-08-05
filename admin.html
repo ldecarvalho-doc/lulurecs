@@ -100,6 +100,7 @@
         <select id="catSelect"></select>
         <button id="newRecBtn">+ New rec</button>
       </div>
+      <input type="text" id="recSearch" placeholder="Search recs by title…" style="width:100%; margin-top:10px">
       <div class="card" style="margin-top:12px; padding:6px 12px">
         <ul class="plain" id="recList"></ul>
       </div>
@@ -119,6 +120,7 @@
           <label class="full">Description<textarea id="f_desc"></textarea></label>
           <label class="full">Lu's notes<textarea id="f_notes"></textarea></label>
           <label class="full">Tags (comma-separated)<input id="f_tags"></label>
+          <label class="full">Categories (shows under all checked)<div class="row" id="f_categories" style="gap:14px"></div></label>
           <label class="full">Links (one per line: Label | https://url)<textarea id="f_links" placeholder="Watch on YouTube | https://youtube.com/..."></textarea></label>
           <label class="full">Poster URL (optional)<input id="f_poster"></label>
         </div>
@@ -145,9 +147,13 @@
         </div>
         <h2>Items (in order)</h2>
         <ul class="plain" id="listItems"></ul>
-        <div class="row" style="margin-top:10px">
-          <select id="addItemSelect" style="flex:1; min-width:200px"></select>
-          <button class="mini" id="addItemBtn">Add</button>
+        <div class="card" style="margin-top:10px; padding:10px 12px">
+          <input type="text" id="addItemSearch" placeholder="Search recs to add…" style="width:100%">
+          <ul class="plain" id="addItemResults" style="max-height:240px; overflow-y:auto; margin-top:8px"></ul>
+          <div class="row" style="margin-top:8px; justify-content:space-between">
+            <span class="dim" id="addSelectedCount"></span>
+            <button class="mini primary" id="addSelectedBtn">Add selected</button>
+          </div>
         </div>
         <div class="row" style="margin-top:12px">
           <button class="primary" id="saveListBtn">Save list</button>
@@ -181,6 +187,7 @@
   // files: path -> { data, sha, dirty }
   const files = {};
   let categories = [], activeCatPath = null, editingId = null, editingListId = null;
+  let recSearch = "", addItemSearch = "", pendingAdd = new Set();
 
   const b64e = s => btoa(unescape(encodeURIComponent(s)));
   const b64d = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ""))));
@@ -230,12 +237,13 @@
   const allEntries = () => categories.flatMap(c => files[c.file].data);
 
   function renderRecs() {
-    const list = files[activeCatPath].data;
+    const q = recSearch.trim().toLowerCase();
+    const list = files[activeCatPath].data.filter(e => !q || e.title.toLowerCase().includes(q));
     $("recList").innerHTML = list.map(e => `
       <li><span class="grow"><b>${e.title}</b> <small>· ${e.id} · ${e.luRating ?? "unrated"}★</small></span>
       <button class="mini" data-edit="${e.id}">Edit</button>
       <button class="mini danger" data-del="${e.id}">Delete</button></li>`).join("") ||
-      '<li class="dim">No entries yet.</li>';
+      `<li class="dim">${q ? "No matches." : "No entries yet."}</li>`;
     $("recList").querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openRecForm(b.dataset.edit));
     $("recList").querySelectorAll("[data-del]").forEach(b => b.onclick = () => deleteRec(b.dataset.del));
   }
@@ -249,6 +257,12 @@
     $("f_year").value = e?.year || ""; $("f_rating").value = e?.luRating ?? "";
     $("f_desc").value = e?.description || ""; $("f_notes").value = e?.notes || "";
     $("f_tags").value = (e?.tags || []).join(", ");
+    const homeCatId = categories.find(c => c.file === activeCatPath)?.id;
+    const currentCats = e?.categories || (homeCatId ? [homeCatId] : []);
+    $("f_categories").innerHTML = categories.map(c => `
+      <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; color:var(--text)">
+        <input type="checkbox" value="${c.id}" ${currentCats.includes(c.id) ? "checked" : ""}> ${c.emoji} ${c.name}
+      </label>`).join("");
     $("f_links").value = (e?.links || []).map(l => `${l.label} | ${l.url}`).join("\n");
     $("f_poster").value = e?.poster || "";
     $("recFormMsg").textContent = "";
@@ -263,6 +277,8 @@
     const list = files[activeCatPath].data;
     if (!editingId && allEntries().some(e => e.id === id))
       return $("recFormMsg").textContent = `id "${id}" already exists.`;
+    const checkedCats = [...$("f_categories").querySelectorAll('input[type="checkbox"]:checked')].map(c => c.value);
+    const homeCatId = categories.find(c => c.file === activeCatPath)?.id;
     const entry = {
       id, title,
       type: $("f_type").value.trim() || "series",
@@ -271,6 +287,7 @@
       luRating: $("f_rating").value === "" ? null : +$("f_rating").value,
       description: $("f_desc").value.trim(),
       notes: $("f_notes").value.trim(),
+      categories: checkedCats.length ? checkedCats : (homeCatId ? [homeCatId] : []),
       tags: $("f_tags").value.split(",").map(t => slug(t)).filter(Boolean),
       links: $("f_links").value.split("\n").map(l => {
         const [label, ...rest] = l.split("|");
@@ -311,6 +328,7 @@
     editingListId = id;
     const l = lists().find(x => x.id === id);
     if (!l) return $("listForm").classList.add("hidden");
+    pendingAdd = new Set(); addItemSearch = ""; $("addItemSearch").value = "";
     $("l_title").value = l.title; $("l_id").value = l.id; $("l_desc").value = l.description || "";
     renderListItems(l);
     $("listShareLink").innerHTML = `share: <code>https://${OWNER}.github.io/${REPO}/#list=${l.id}</code>`;
@@ -335,8 +353,28 @@
     $("listItems").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => {
       l.items.splice(+b.dataset.rm, 1); renderListItems(l);
     });
-    $("addItemSelect").innerHTML = all.filter(e => !l.items.includes(e.id))
-      .map(e => `<option value="${e.id}">${e.title}</option>`).join("");
+    renderAddResults(l);
+  }
+
+  function renderAddResults(l) {
+    const all = allEntries();
+    const q = addItemSearch.trim().toLowerCase();
+    const candidates = all.filter(e => !l.items.includes(e.id) && (!q || e.title.toLowerCase().includes(q)));
+    const shown = candidates.slice(0, 60);
+    $("addItemResults").innerHTML = shown.map(e => `
+      <li><label class="grow" style="display:flex; align-items:center; gap:8px; cursor:pointer">
+        <input type="checkbox" value="${e.id}" ${pendingAdd.has(e.id) ? "checked" : ""}> ${e.title}
+        <small>· ${e.id}</small>
+      </label></li>`).join("") ||
+      `<li class="dim">${q ? "No matches." : "Start typing to search…"}</li>`;
+    if (candidates.length > shown.length) {
+      $("addItemResults").insertAdjacentHTML("beforeend", `<li class="dim">…and ${candidates.length - shown.length} more, refine your search</li>`);
+    }
+    $("addItemResults").querySelectorAll('input[type="checkbox"]').forEach(cb => cb.onchange = () => {
+      cb.checked ? pendingAdd.add(cb.value) : pendingAdd.delete(cb.value);
+      $("addSelectedCount").textContent = pendingAdd.size ? `${pendingAdd.size} selected` : "";
+    });
+    $("addSelectedCount").textContent = pendingAdd.size ? `${pendingAdd.size} selected` : "";
   }
 
   function saveList() {
@@ -414,7 +452,7 @@
   $("forgetBtn").onclick = () => { localStorage.removeItem(TOKEN_KEY); location.reload(); };
   $("tabRecs").onclick = () => { $("tabRecs").classList.add("active"); $("tabLists").classList.remove("active"); $("recsPane").classList.remove("hidden"); $("listsPane").classList.add("hidden"); };
   $("tabLists").onclick = () => { $("tabLists").classList.add("active"); $("tabRecs").classList.remove("active"); $("listsPane").classList.remove("hidden"); $("recsPane").classList.add("hidden"); if (lists().length) openListForm(editingListId || lists()[0].id); };
-  $("catSelect").onchange = e => { activeCatPath = e.target.value; $("recForm").classList.add("hidden"); renderRecs(); };
+  $("catSelect").onchange = e => { activeCatPath = e.target.value; recSearch = ""; $("recSearch").value = ""; $("recForm").classList.add("hidden"); renderRecs(); };
   $("newRecBtn").onclick = () => openRecForm(null);
   $("saveRecBtn").onclick = saveRec;
   $("cancelRecBtn").onclick = () => $("recForm").classList.add("hidden");
@@ -439,11 +477,20 @@
     renderListSelect();
     $("listForm").classList.add("hidden");
   };
-  $("addItemBtn").onclick = () => {
+  $("addItemSearch").oninput = e => {
+    addItemSearch = e.target.value;
     const l = lists().find(x => x.id === editingListId);
-    const id = $("addItemSelect").value;
-    if (l && id) { l.items.push(id); renderListItems(l); }
+    if (l) renderAddResults(l);
   };
+  $("addSelectedBtn").onclick = () => {
+    const l = lists().find(x => x.id === editingListId);
+    if (!l || !pendingAdd.size) return;
+    pendingAdd.forEach(id => { if (!l.items.includes(id)) l.items.push(id); });
+    pendingAdd = new Set();
+    markDirty("data/lists.json");
+    renderListItems(l);
+  };
+  $("recSearch").oninput = e => { recSearch = e.target.value; renderRecs(); };
   $("saveListBtn").onclick = saveList;
   $("commitBtn").onclick = commit;
   $("discardBtn").onclick = discard;
