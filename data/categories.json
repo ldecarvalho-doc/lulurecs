@@ -11,7 +11,14 @@
     "name": "K-dramas",
     "emoji": "🇰🇷",
     "file": "data/k-dramas.json",
-    "enabled": false
+    "enabled": true
+  },
+  {
+    "id": "asian-dramas",
+    "name": "Asian Dramas",
+    "emoji": "🌏",
+    "file": "data/asian-dramas.json",
+    "enabled": true
   },
   {
     "id": "music",
