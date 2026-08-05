@@ -14,10 +14,10 @@
     "enabled": true
   },
   {
-    "id": "asian-dramas",
-    "name": "Asian Dramas",
+    "id": "non-korean-dramas",
+    "name": "Non-Korean Dramas",
     "emoji": "🌏",
-    "file": "data/asian-dramas.json",
+    "file": "data/non-korean-dramas.json",
     "enabled": true
   },
   {
