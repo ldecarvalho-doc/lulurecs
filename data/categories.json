@@ -7,6 +7,13 @@
     "enabled": true
   },
   {
+    "id": "k-dramas",
+    "name": "K-dramas",
+    "emoji": "🇰🇷",
+    "file": "data/k-dramas.json",
+    "enabled": false
+  },
+  {
     "id": "music",
     "name": "Music",
     "emoji": "🎵",
