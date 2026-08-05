@@ -46,6 +46,18 @@ python3 scripts/enrich.py
 
 It fills in missing `poster` and `description` fields (never touches your notes, ratings, or tags). Posters are hotlinked from TMDB's CDN, so the repo stays tiny.
 
+## Tag groups (sidebar organisation)
+
+`data/tag-groups.json` organises the sidebar into collapsible sections:
+
+```json
+{ "id": "genre", "label": "Genre & format", "tags": ["bl", "romance", "..."] }
+```
+
+Rules: a tag may appear in **several groups** (e.g. `sapphic` is under both Genre and Representation). Only tags actually used in the current category are shown, so each category's sidebar stays relevant. Tags not listed in any group fall into a **More** section at the bottom — that's the cue to file them. Selected tags jump to a pinned "Filtering by" block at the top, with a *clear all*. Collapsed sections are remembered per visitor.
+
+Groups may list tags that don't exist yet (handy for planning a new category — they simply don't render until something uses them).
+
 ## Tag context (explain BL, SKAM, etc.)
 
 `data/tags.json` maps a tag to a label + explanation:

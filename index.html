@@ -85,21 +85,35 @@
     display: flex; gap: 20px; align-items: flex-start;
   }
   aside.tagbar {
-    flex: 0 0 190px; position: sticky; top: 16px;
-    display: flex; flex-direction: column; gap: 5px;
+    flex: 0 0 200px; position: sticky; top: 16px;
+    display: flex; flex-direction: column; gap: 10px;
     max-height: calc(100vh - 32px); overflow-y: auto;
+    scrollbar-width: thin;
   }
-  aside.tagbar .tags-title {
-    color: var(--text-dim); font-size: 0.75rem; text-transform: uppercase;
-    letter-spacing: 1px; padding: 2px 4px 4px;
+  .tag-group { display: flex; flex-direction: column; gap: 5px; }
+  .tag-group .group-head {
+    color: var(--text-dim); font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: 1px; padding: 2px 4px; cursor: pointer; user-select: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
   }
+  .tag-group .group-head:hover { color: var(--text); }
+  .tag-group .caret { transition: transform 0.15s ease; font-size: 0.8em; }
+  .tag-group.collapsed .caret { transform: rotate(-90deg); }
+  .tag-group.collapsed .chips { display: none; }
+  .tag-group.selected-group .group-head { color: var(--accent-2); }
+  .chips { display: flex; flex-direction: column; gap: 5px; }
   .tagbar .chip {
     background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
     border-radius: 8px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
     text-align: left;
   }
+  .tagbar .chip:hover { border-color: var(--accent); }
   .tagbar .chip.active { border-color: var(--accent-2); color: var(--accent-2); }
   .tagbar .chip .info-dot { opacity: 0.7; font-size: 0.75em; }
+  .tagbar .clear-all {
+    background: none; border: none; color: var(--accent-2); cursor: pointer;
+    font-size: 0.7rem; text-transform: none; letter-spacing: 0; padding: 0;
+  }
   .content { flex: 1; min-width: 0; }
   .tag-info {
     background: var(--surface); border: 1px solid var(--accent-2); border-radius: var(--radius);
@@ -121,11 +135,8 @@
   }
   @media (max-width: 720px) {
     .layout { flex-direction: column; }
-    aside.tagbar {
-      position: static; flex: none; width: 100%; max-height: none;
-      flex-direction: row; flex-wrap: wrap;
-    }
-    aside.tagbar .tags-title { width: 100%; }
+    aside.tagbar { position: static; flex: none; width: 100%; max-height: none; }
+    .chips { flex-direction: row; flex-wrap: wrap; }
     .tagbar .chip { border-radius: 999px; }
   }
   .card {
@@ -237,7 +248,9 @@
 
   let categories = [], items = [], activeCat = null;
   let lists = [], activeList = null, allItemsCache = null;
-  let tagInfo = {};
+  let tagInfo = {}, tagGroups = [], tagCounts = {};
+  const COLLAPSE_KEY = "lulurecs:collapsedGroups";
+  let collapsed = new Set((() => { try { return JSON.parse(localStorage.getItem(COLLAPSE_KEY)) || []; } catch { return []; } })());
   const state = { search: "", type: "", country: "", tags: new Set(), favsOnly: false, sort: "rating" };
 
   const $ = id => document.getElementById(id);
@@ -320,25 +333,59 @@
       .forEach(c => {
         ctrySel.insertAdjacentHTML("beforeend", `<option value="${c}">${flag(c)} ${COUNTRY_NAMES[c] || c}</option>`);
       });
-    const counts = {};
-    items.forEach(i => (i.tags || []).forEach(t => counts[t] = (counts[t] || 0) + 1));
-    const tagbar = $("tagbar");
-    tagbar.innerHTML = Object.keys(counts).length ? '<div class="tags-title">Tags</div>' : "";
-    Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b)).forEach((t, idx) => {
-      const chip = document.createElement("span");
-      chip.className = "chip";
-      chip.dataset.idx = idx;
-      chip.textContent = `${t} (${counts[t]})`;
-      if (tagInfo[t]) {
-        chip.insertAdjacentHTML("beforeend", ' <span class="info-dot">ⓘ</span>');
-        chip.title = tagInfo[t].description;
-      }
-      chip.dataset.tag = t;
-      chip.onclick = () => { state.tags.has(t) ? state.tags.delete(t) : state.tags.add(t); render(); };
-      tagbar.appendChild(chip);
-    });
+    tagCounts = {};
+    items.forEach(i => (i.tags || []).forEach(t => tagCounts[t] = (tagCounts[t] || 0) + 1));
     state.type = ""; state.country = ""; state.tags.clear();
     typeSel.value = ""; ctrySel.value = "";
+  }
+
+  function chipHtml(t, active) {
+    const info = tagInfo[t];
+    return `<span class="chip${active ? " active" : ""}" data-tag="${t}"` +
+      (info ? ` title="${(info.description || "").replace(/"/g, "&quot;").slice(0, 300)}"` : "") +
+      `>${t} (${tagCounts[t] || 0})${info ? ' <span class="info-dot">ⓘ</span>' : ""}</span>`;
+  }
+
+  function groupHtml(id, label, tags, opts = {}) {
+    if (!tags.length) return "";
+    const isCollapsed = collapsed.has(id) && !opts.pinned;
+    return `<div class="tag-group${isCollapsed ? " collapsed" : ""}${opts.pinned ? " selected-group" : ""}" data-group="${id}">
+      <div class="group-head">${label}
+        ${opts.pinned ? '<button class="clear-all">clear all</button>' : '<span class="caret">▾</span>'}
+      </div>
+      <div class="chips">${tags.map(t => chipHtml(t, opts.pinned)).join("")}</div>
+    </div>`;
+  }
+
+  function renderTagbar() {
+    const tagbar = $("tagbar");
+    const present = Object.keys(tagCounts);
+    if (!present.length) { tagbar.innerHTML = ""; return; }
+    const sel = [...state.tags];
+    const taken = new Set(sel);
+    let html = groupHtml("__selected", "Filtering by", sel, { pinned: true });
+    tagGroups.forEach(g => {
+      html += groupHtml(g.id, g.label, g.tags.filter(t => tagCounts[t] && !taken.has(t)));
+    });
+    const grouped = new Set(tagGroups.flatMap(g => g.tags));
+    const other = present.filter(t => !grouped.has(t) && !taken.has(t))
+      .sort((a, b) => tagCounts[b] - tagCounts[a] || a.localeCompare(b));
+    html += groupHtml("__other", "More", other);
+    tagbar.innerHTML = html;
+
+    tagbar.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+      const t = c.dataset.tag;
+      state.tags.has(t) ? state.tags.delete(t) : state.tags.add(t);
+      render();
+    });
+    tagbar.querySelectorAll(".group-head").forEach(h => h.onclick = e => {
+      if (e.target.classList.contains("clear-all")) { state.tags.clear(); return render(); }
+      const id = h.parentElement.dataset.group;
+      if (id === "__selected") return;
+      collapsed.has(id) ? collapsed.delete(id) : collapsed.add(id);
+      localStorage.setItem(COLLAPSE_KEY, JSON.stringify([...collapsed]));
+      h.parentElement.classList.toggle("collapsed");
+    });
   }
 
   function filtered() {
@@ -399,15 +446,7 @@
     $("tagInfoWrap").querySelectorAll(".close").forEach(b => {
       b.onclick = () => { state.tags.delete(b.dataset.tag); render(); };
     });
-    document.querySelectorAll("#tagbar .chip").forEach(c => c.classList.toggle("active", state.tags.has(c.dataset.tag)));
-    { // selected tags float to the top of the sidebar
-      const tagbar = $("tagbar");
-      const chips = [...tagbar.querySelectorAll(".chip")];
-      chips.sort((a, b) =>
-        (state.tags.has(b.dataset.tag) - state.tags.has(a.dataset.tag)) ||
-        (a.dataset.idx - b.dataset.idx));
-      chips.forEach(c => tagbar.appendChild(c));
-    }
+    renderTagbar();
     $("favToggle").classList.toggle("active", state.favsOnly);
     const list = filtered();
     $("count").textContent = `${list.length} of ${items.length} recs` + (state.favsOnly ? " · showing your favorites" : "");
@@ -472,6 +511,7 @@
     $("sort").value = state.sort;
     const initialHash = location.hash; // captured before selectCategory strips it
     try { tagInfo = await (await fetch("data/tags.json")).json(); } catch { tagInfo = {}; }
+    try { tagGroups = await (await fetch("data/tag-groups.json")).json(); } catch { tagGroups = []; }
     await loadCategories();
     await loadLists();
     applyHash(initialHash);

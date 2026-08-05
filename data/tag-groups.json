@@ -1,0 +1,80 @@
+[
+  {
+    "id": "lu",
+    "label": "Lu's picks",
+    "tags": ["lus-favorites", "all-time-favorite", "bl-royalty", "prestige"]
+  },
+  {
+    "id": "genre",
+    "label": "Genre & format",
+    "tags": [
+      "bl", "gl", "sapphic", "lgbtq", "queer-icon", "drag",
+      "romance", "comedy", "crime", "action", "fantasy", "thriller", "horror",
+      "coming-of-age", "teen-drama", "slice-of-life", "melodrama",
+      "period-piece", "history", "biography", "true-story", "war", "tragedy",
+      "parody", "campy", "cult-classic", "classic", "indie", "low-budget",
+      "christmas", "fairy-tale", "family", "anthology", "short-film", "external-list"
+    ]
+  },
+  {
+    "id": "music",
+    "label": "Music & stage",
+    "tags": ["musical", "movie-musical", "music", "hip-hop", "jukebox", "abba", "artist-life", "ost"]
+  },
+  {
+    "id": "tropes",
+    "label": "Tropes & setting",
+    "tags": [
+      "enemies-to-lovers", "friends-to-lovers", "friends-with-benefits", "fake-dating",
+      "slow-burn", "love-triangle", "opposites-attract", "rivals", "bodyguard",
+      "reincarnation", "time-travel", "second-chance",
+      "school", "university", "workplace", "medical", "legal", "sports",
+      "gamers", "pandemic-era", "friendship", "lesbian-side-couple", "found-family"
+    ]
+  },
+  {
+    "id": "mood",
+    "label": "Mood & commitment",
+    "tags": [
+      "easy-watch", "casual-watching", "short-watch", "binge-worthy",
+      "wholesome", "feel-good", "tearjerker", "angst", "sentimental",
+      "heavy-themes", "grief", "prestige"
+    ]
+  },
+  {
+    "id": "rep",
+    "label": "Representation & themes",
+    "tags": [
+      "disability", "deaf-character", "blind-character", "neurodivergent",
+      "sapphic", "gl", "lgbtq", "trans", "drag",
+      "political", "religion", "class", "mental-health", "war"
+    ]
+  },
+  {
+    "id": "people",
+    "label": "Studios, stages & creators",
+    "tags": [
+      "gmmtv", "director-paof", "director-pjojo", "director-pgolf", "director-pnuchy",
+      "broadway", "west-end", "disney", "starkid", "sondheim",
+      "tvn", "jtbc", "sbs", "kbs", "mbc", "studio-dragon"
+    ]
+  },
+  {
+    "id": "source",
+    "label": "Adaptations & universes",
+    "tags": [
+      "skam-universe", "based-on-comic", "based-on-book", "based-on-film",
+      "based-on-play", "based-on-webtoon", "remake", "true-story", "anthology"
+    ]
+  },
+  {
+    "id": "watch",
+    "label": "Where to watch",
+    "tags": ["free-on-youtube", "free-streaming", "netflix", "viki", "viu", "iqiyi", "disney-plus"]
+  },
+  {
+    "id": "notes",
+    "label": "Content notes",
+    "tags": ["lots-of-sex", "heavy-themes", "grief", "religion", "mental-health", "unfinished"]
+  }
+]
