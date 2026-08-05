@@ -91,6 +91,8 @@
     padding: 9px 12px; font-size: 0.95rem; user-select: none; color: var(--text);
   }
   .toggle.active { border-color: var(--heart); color: var(--heart); }
+  .toggle.reset { font-family: inherit; color: var(--accent-2); border-color: var(--accent-2); }
+  .toggle.reset:hover { background: var(--surface-2); }
 
   .layout {
     max-width: 1100px; margin: 16px auto 60px; padding: 0 20px;
@@ -262,6 +264,7 @@
     <option value="year-asc">Sort: Oldest</option>
   </select>
   <span class="toggle" id="favToggle">♥ Favorites</span>
+  <button class="toggle reset hidden" id="resetBtn" title="Clear search, filters and tags">✕ Reset filters</button>
 </div>
 
 <div class="layout">
@@ -525,6 +528,8 @@
     });
     renderTagbar();
     $("favToggle").classList.toggle("active", state.favsOnly);
+    const filtering = !!(state.search || state.type || state.country || state.tags.size || state.favsOnly);
+    $("resetBtn").classList.toggle("hidden", !filtering);
     const list = filtered();
     $("count").textContent = `${list.length} of ${items.length} recs` + (state.favsOnly ? " · showing your favorites" : "");
     const grid = $("grid");
@@ -638,9 +643,14 @@
       menu.innerHTML = `
         <button class="menu-item" id="menuAddList">＋ Add to list</button>
         <button class="menu-item" id="menuAddCat">🏷️ Add to category</button>
+        <button class="menu-item" id="menuEdit">✏️ Edit in admin</button>
         <button class="menu-item" id="menuForget">Forget token</button>`;
       menu.querySelector("#menuAddList").onclick = showListPicker;
       menu.querySelector("#menuAddCat").onclick = showCategoryPicker;
+      menu.querySelector("#menuEdit").onclick = () => {
+        window.open(`admin.html#edit=${encodeURIComponent(item.id)}`, "_blank", "noopener");
+        closeMenu();
+      };
       menu.querySelector("#menuForget").onclick = () => { localStorage.removeItem(PAT_KEY); closeMenu(); };
     }
     positionMenu(btn);
@@ -737,6 +747,12 @@
   $("countryFilter").onchange = e => { state.country = e.target.value; render(); };
   $("sort").onchange = e => { state.sort = e.target.value; render(); };
   $("favToggle").onclick = () => { state.favsOnly = !state.favsOnly; render(); };
+  $("resetBtn").onclick = () => {
+    state.search = ""; state.type = ""; state.country = ""; state.favsOnly = false;
+    state.tags.clear();
+    $("search").value = ""; $("typeFilter").value = ""; $("countryFilter").value = "";
+    render();
+  };
 
   function applyHash(hash) {
     const m = (hash || "").match(/list=([\w-]+)/);
