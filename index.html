@@ -276,13 +276,29 @@
     categories = await (await fetch("data/categories.json")).json();
     const nav = $("cats");
     nav.innerHTML = "";
+    const allBtn = document.createElement("button");
+    allBtn.textContent = "✨ All";
+    allBtn.onclick = () => selectAll(allBtn);
+    nav.appendChild(allBtn);
     categories.filter(cat => cat.enabled).forEach(cat => {
       const b = document.createElement("button");
       b.textContent = `${cat.emoji} ${cat.name}`;
       b.onclick = () => selectCategory(cat, b);
       nav.appendChild(b);
-      if (!activeCat) selectCategory(cat, b);
     });
+  }
+
+  async function selectAll(btn) {
+    activeCat = { id: "__all__", name: "All" };
+    activeList = null;
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    [...$("cats").children].forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    state.sort = "rating"; $("sort").value = "rating";
+    items = await allItems();
+    buildFilters();
+    render();
   }
 
   async function selectCategory(cat, btn) {
@@ -298,6 +314,14 @@
     render();
   }
 
+  function renderPlaceholder() {
+    $("listHeader").style.display = "none";
+    $("tagInfoWrap").innerHTML = "";
+    $("tagbar").innerHTML = "";
+    $("count").textContent = "";
+    $("grid").innerHTML = '<div class="empty">👋 Pick a category above — or hit ✨ All — to start browsing.</div>';
+  }
+
   async function loadLists() {
     try { lists = await (await fetch("data/lists.json")).json(); } catch { lists = []; }
     const bar = $("lists");
@@ -307,7 +331,7 @@
       const b = document.createElement("button");
       b.textContent = l.title;
       b.dataset.listId = l.id;
-      b.onclick = () => (activeList && activeList.id === l.id) ? selectCategory(categories.find(c => c.enabled), $("cats").children[0]) : selectList(l);
+      b.onclick = () => (activeList && activeList.id === l.id) ? selectAll($("cats").children[0]) : selectList(l);
       bar.appendChild(b);
     });
   }
@@ -447,7 +471,7 @@
         `<a class="clear" href="#">← back to all recs</a>`;
       lh.querySelector("a.clear").onclick = e => {
         e.preventDefault();
-        selectCategory(categories.find(c => c.enabled), $("cats").children[0]);
+        selectAll($("cats").children[0]);
       };
     } else {
       lh.style.display = "none";
@@ -527,7 +551,8 @@
     try { tagGroups = await (await fetch("data/tag-groups.json")).json(); } catch { tagGroups = []; }
     await loadCategories();
     await loadLists();
-    applyHash(initialHash);
+    const matched = applyHash(initialHash);
+    if (!matched) renderPlaceholder();
     window.addEventListener("hashchange", () => applyHash(location.hash));
   })().catch(err => {
     $("grid").innerHTML = `<div class="empty">Couldn't load data (${err.message}).<br>If you opened this file directly, serve it instead: <code>python3 -m http.server</code></div>`;
