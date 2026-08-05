@@ -149,6 +149,9 @@
           <label class="full">Categories (shows under all checked)<div class="row" id="f_categories" style="gap:14px"></div></label>
           <label class="full">Links (one per line: Label | https://url)<textarea id="f_links" placeholder="Watch on YouTube | https://youtube.com/..."></textarea></label>
           <label class="full">Poster URL (optional)<input id="f_poster"></label>
+          <label class="full" style="display:flex; align-items:center; gap:8px; color:var(--text)">
+            <input type="checkbox" id="f_private" style="width:auto"> 🔒 Private — hide from the site (visible only when you unlock with <code>#private=1</code>)
+          </label>
         </div>
         <div class="row" style="margin-top:12px">
           <button class="primary" id="saveRecBtn">Save rec</button>
@@ -299,7 +302,7 @@
     const list = shownRecs();
     $("recList").innerHTML = list.map(e => `
       <li><input type="checkbox" class="selbox" value="${e.id}" ${picked.has(e.id) ? "checked" : ""} style="width:auto">
-      <span class="grow"><b>${e.title}</b> <small>· ${e.id} · ${e.luRating ?? "unrated"}★</small></span>
+      <span class="grow">${e.private ? "🔒 " : ""}<b>${e.title}</b> <small>· ${e.id} · ${e.luRating ?? "unrated"}★</small></span>
       <button class="mini" data-edit="${e.id}">Edit</button>
       <button class="mini danger" data-del="${e.id}">Delete</button></li>`).join("") ||
       `<li class="dim">${q ? "No matches." : "No entries yet."}</li>`;
@@ -346,6 +349,7 @@
       </label>`).join("");
     $("f_links").value = (e?.links || []).map(l => `${l.label} | ${l.url}`).join("\n");
     $("f_poster").value = e?.poster || "";
+    $("f_private").checked = !!e?.private;
     $("recFormMsg").textContent = "";
     $("recForm").classList.remove("hidden");
     $("f_title").focus();
@@ -378,7 +382,8 @@
         const url = rest.join("|").trim();
         return label.trim() && url ? { label: label.trim(), url } : null;
       }).filter(Boolean),
-      poster: $("f_poster").value.trim() || null
+      poster: $("f_poster").value.trim() || null,
+      ...($("f_private").checked ? { private: true } : {})
     };
     const i = list.findIndex(e => e.id === editingId);
     if (i >= 0) list[i] = entry; else list.push(entry);

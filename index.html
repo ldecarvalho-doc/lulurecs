@@ -92,7 +92,11 @@
   }
   .toggle.active { border-color: var(--heart); color: var(--heart); }
   .toggle.reset { font-family: inherit; color: var(--accent-2); border-color: var(--accent-2); }
-  .toggle.reset.hidden, .toggle.share.hidden { display: none; }
+  .toggle.reset.hidden, .toggle.share.hidden, .toggle.private.hidden { display: none; }
+  .toggle.private { font-family: inherit; color: var(--warn, #facc15); border-color: var(--warn, #facc15); }
+  body.only-mode .list-header a.clear { display: none; }
+  .card.is-private { border-style: dashed; }
+  .card.is-private .card-top h2::after { content: " 🔒"; font-size: 0.8em; opacity: 0.8; }
   .toggle.share { font-family: inherit; color: var(--accent); border-color: var(--border); }
   .toggle.share:hover { border-color: var(--accent); }
   .toggle.reset:hover { background: var(--surface-2); }
@@ -269,6 +273,8 @@
   <span class="toggle" id="favToggle">♥ Favorites</span>
   <button class="toggle reset hidden" id="resetBtn" title="Clear search, filters and tags">✕ Reset filters</button>
   <button class="toggle share hidden" id="shareBtn" title="Copy a link to exactly this view">🔗 Copy link</button>
+  <button class="toggle share hidden" id="focusBtn" title="Copy a link that shows ONLY this list — no category tabs, nothing else to browse">🙈 Copy focused link</button>
+  <button class="toggle private hidden" id="privateBtn" title="Private entries are visible to you — click to hide them again">🔓 private shown</button>
 </div>
 
 <div class="layout">
@@ -306,6 +312,9 @@
   let categories = [], items = [], activeCat = null;
   const catButtons = {};
   let applyingHash = false;
+  const PRIVATE_KEY = "lulurecs:showPrivate";
+  let showPrivate = localStorage.getItem(PRIVATE_KEY) === "1";
+  let onlyMode = false; // focused share link: no category nav, no way to browse onward
   let lists = [], activeList = null, allItemsCache = null;
   let tagInfo = {}, tagGroups = [], tagCounts = {};
   const COLLAPSE_KEY = "lulurecs:collapsedGroups";
@@ -327,7 +336,7 @@
     allBtn.onclick = () => selectAll(allBtn);
     nav.appendChild(allBtn);
     catButtons["all"] = allBtn;
-    categories.filter(cat => cat.enabled).forEach(cat => {
+    categories.filter(cat => cat.enabled && (showPrivate || !cat.private)).forEach(cat => {
       const b = document.createElement("button");
       b.textContent = `${cat.emoji} ${cat.name}`;
       b.onclick = () => selectCategory(cat, b);
@@ -391,7 +400,8 @@
       ));
       allItemsCache = files.flat();
     }
-    return allItemsCache;
+    // entries marked "private": true stay out of every view unless unlocked
+    return showPrivate ? allItemsCache : allItemsCache.filter(i => !i.private);
   }
 
   async function selectList(l) {
@@ -535,7 +545,9 @@
     $("favToggle").classList.toggle("active", state.favsOnly);
     const filtering = !!(state.search || state.type || state.country || state.tags.size || state.favsOnly);
     $("resetBtn").classList.toggle("hidden", !filtering);
-    $("shareBtn").classList.toggle("hidden", !(activeCat || activeList));
+    $("shareBtn").classList.toggle("hidden", !(activeCat || activeList) || onlyMode);
+    $("focusBtn").classList.toggle("hidden", !activeList || onlyMode);
+    $("privateBtn").classList.toggle("hidden", !showPrivate);
     syncHash();
     const list = filtered();
     $("count").textContent = `${list.length} of ${items.length} recs` + (state.favsOnly ? " · showing your favorites" : "");
@@ -547,7 +559,7 @@
     }
     list.forEach(i => {
       const card = document.createElement("article");
-      card.className = "card";
+      card.className = "card" + (i.private ? " is-private" : "");
       const posterStyle = i.poster
         ? `background-image:url('${i.poster}')`
         : `background:${PLACEHOLDER_GRADIENTS[hue(i.id) % PLACEHOLDER_GRADIENTS.length]}`;
@@ -755,6 +767,18 @@
   $("sort").onchange = e => { state.sort = e.target.value; render(); };
   $("favToggle").onclick = () => { state.favsOnly = !state.favsOnly; render(); };
   $("shareBtn").onclick = e => copyShareLink(e.currentTarget);
+  $("focusBtn").onclick = e => copyFocusedLink(e.currentTarget);
+  $("privateBtn").onclick = async () => {
+    showPrivate = false;
+    localStorage.setItem(PRIVATE_KEY, "0");
+    allItemsCache = null;
+    await loadCategories();
+    if (activeList) await selectList(activeList);
+    else if (activeCat) activeCat.id === "__all__"
+      ? await selectAll(catButtons["all"])
+      : await selectCategory(activeCat, catButtons[activeCat.id]);
+    render();
+  };
   $("resetBtn").onclick = () => {
     state.search = ""; state.type = ""; state.country = ""; state.favsOnly = false;
     state.tags.clear();
@@ -770,6 +794,7 @@
     const p = [];
     if (activeList) p.push("list=" + activeList.id);
     else if (activeCat) p.push("cat=" + (activeCat.id === "__all__" ? "all" : activeCat.id));
+    if (onlyMode) p.push("only=1");
     if (state.tags.size) p.push("tags=" + [...state.tags].join(","));
     if (state.search) p.push("q=" + encodeURIComponent(state.search));
     if (state.type) p.push("type=" + state.type);
@@ -791,6 +816,14 @@
 
   async function applyHash(hash) {
     const p = parseHash(hash);
+    // unlock/lock private entries for this browser (never included in copied links)
+    if (p.private === "1" || p.private === "0") {
+      showPrivate = p.private === "1";
+      localStorage.setItem(PRIVATE_KEY, showPrivate ? "1" : "0");
+      allItemsCache = null;
+      await loadCategories();
+    }
+    if (p.only === "1") setOnlyMode(true);
     if (!p.list && !p.cat) return false;
     applyingHash = true;
     try {
@@ -801,7 +834,7 @@
       } else if (p.cat === "all") {
         await selectAll(catButtons["all"]);
       } else {
-        const c = categories.find(x => x.id === p.cat && x.enabled);
+        const c = categories.find(x => x.id === p.cat && x.enabled && (showPrivate || !x.private));
         if (!c) return false;
         await selectCategory(c, catButtons[p.cat]);
       }
@@ -817,6 +850,24 @@
     }
     render();
     return true;
+  }
+
+  function setOnlyMode(on) {
+    onlyMode = on;
+    $("cats").style.display = on ? "none" : "";
+    $("lists").style.display = on ? "none" : "";
+    document.body.classList.toggle("only-mode", on);
+  }
+
+  async function copyFocusedLink(btn) {
+    if (!activeList) return;
+    const url = `${location.origin}${location.pathname}#list=${activeList.id}&only=1`;
+    try {
+      await navigator.clipboard.writeText(url);
+      const old = btn.textContent;
+      btn.textContent = "✓ Focused link copied!";
+      setTimeout(() => btn.textContent = old, 2200);
+    } catch { prompt("Copy this link:", url); }
   }
 
   async function copyShareLink(btn) {
