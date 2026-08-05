@@ -723,9 +723,10 @@
     }
   }
 
+  $("actionMenu").addEventListener("click", e => e.stopPropagation());
   document.addEventListener("click", e => {
     const menu = $("actionMenu");
-    if (!menu.classList.contains("hidden") && !menu.contains(e.target) && !e.target.classList.contains("burger-btn")) {
+    if (!menu.classList.contains("hidden") && !e.target.classList.contains("burger-btn")) {
       closeMenu();
     }
   });
