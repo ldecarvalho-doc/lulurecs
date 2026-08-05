@@ -23,7 +23,7 @@
         "url": "https://tv.nrk.no/serie/skam"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/mkgQX2mRSn7aDSlFtnpUtNintbA.jpg"
   },
   {
     "id": "druck",
@@ -43,7 +43,7 @@
       "coming-of-age"
     ],
     "links": [],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/vhyrWHKmviYvIAGZ5gW6Tw9n9ih.jpg"
   },
   {
     "id": "skam-france",
@@ -63,7 +63,7 @@
       "romance"
     ],
     "links": [],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/mif2dTIqHIdTjHIUxBY3yHjZpH7.jpg"
   },
   {
     "id": "skam-italia",
@@ -83,7 +83,7 @@
       "friendship"
     ],
     "links": [],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/9XOJpyalPs43SuU9hbcvKnAwKPs.jpg"
   },
   {
     "id": "wtfock",
@@ -102,7 +102,7 @@
       "teen-drama"
     ],
     "links": [],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/2fBRL2r5vuwbf5z3ryQElwaHXgp.jpg"
   },
   {
     "id": "bad-buddy",
@@ -134,7 +134,7 @@
         "url": "https://www.youtube.com/watch?v=F4Hy7ZO_Np4&list=PLAej3-wF5w6jgnKj6k51FygdoOAAZKoDU"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/8slFjcbVZhr3rTTvrltmpLhdj4N.jpg"
   },
   {
     "id": "a-tale-of-a-thousand-stars",
@@ -164,7 +164,7 @@
         "url": "https://www.youtube.com/watch?v=_I6NrSZDdsM&list=PLYYyUhZKiEj4JzeVKUL3ysJ5M1_qQQB9P"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/vXiKn65oEwNRVh8qWP4F0GZf3fZ.jpg"
   },
   {
     "id": "i-told-sunset-about-you",
@@ -192,7 +192,7 @@
         "url": "https://www.viki.com/tv/38887c-i-told-sunset-about-you"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/uBFCB2TZ0H5axGoDTQ1qGhfdxkh.jpg"
   },
   {
     "id": "until-we-meet-again",
@@ -220,7 +220,7 @@
         "url": "https://www.youtube.com/watch?v=QG3Oya32MoQ&list=PLGeYurfvKJYlyHYdcKe6OiB_SbGIgS5CH"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/kN18G09NmJSurVOQ1PyGEOQLKaA.jpg"
   },
   {
     "id": "not-me",
@@ -250,7 +250,7 @@
         "url": "https://www.youtube.com/watch?v=BtAKkC7wIHc&list=PLYYyUhZKiEj59aNMppRfRc_F_MYI_ccLH"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/aIkQnUsDEKRr3gS1TuYZ1b8mDxC.jpg"
   },
   {
     "id": "2gether",
@@ -283,7 +283,7 @@
         "url": "https://www.youtube.com/watch?v=ATzhEdfss10&list=PLAej3-wF5w6gG3ZVKsUEzEqFUMqRn-Vmh"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/akc09R4tIDHclb8vvLqX6wNWLXt.jpg"
   },
   {
     "id": "theory-of-love",
@@ -311,7 +311,7 @@
         "url": "https://www.youtube.com/watch?v=_u6bHEWlvZU&list=PLszepnkojZI6NbJpvcPwFoGA_GWVDzFhq"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/8SvjtBxQ3Cc1mWBRlpCK8RuNiMG.jpg"
   },
   {
     "id": "history2",
@@ -337,7 +337,7 @@
         "url": "https://www.viki.com/tv/36096c-history-2"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/vgzAqDqhyzaxUjtOZCJWCS4yl3F.jpg"
   },
   {
     "id": "history3-make-our-days-count",
@@ -363,7 +363,7 @@
         "url": "https://www.viki.com/tv/36748c-history-3-make-our-days-count"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/6gfHxDwf8GqEEhRYwctCjL2Kb9i.jpg"
   },
   {
     "id": "history3-trapped",
@@ -389,7 +389,7 @@
         "url": "https://www.viki.com/tv/36410c-history-3-trapped"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/eGDML3aHpCH8UeNeEv1h28RQkWG.jpg"
   },
   {
     "id": "we-best-love",
@@ -419,7 +419,7 @@
         "url": "https://wetv.vip/en/play/8xzttovneq58i2i-Fighting%20Mr.%202nd"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/ohPGg1QcvoytRxP57VO1jycuCaY.jpg"
   },
   {
     "id": "cherry-magic",
@@ -447,7 +447,7 @@
         "url": "https://www.crunchyroll.com/series/GP5HJ8435/cherry-magic-thirty-years-of-virginity-can-make-you-a-wizard"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/5UlL10JJJlwqfPNtE7BfhhNBUSA.jpg"
   },
   {
     "id": "kieta-hatsukoi",
@@ -474,7 +474,7 @@
         "url": "https://www.viki.com/tv/38218c-my-love-mix-up"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/jqLj1zL9ZFcL0znHmrJA6tTMejl.jpg"
   },
   {
     "id": "where-your-eyes-linger",
@@ -500,7 +500,7 @@
         "url": "https://www.viki.com/tv/37111c-where-your-eyes-linger"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/LnkeZTnRMNPhxzqmwz6f88NGYC.jpg"
   },
   {
     "id": "semantic-error",
@@ -528,7 +528,7 @@
         "url": "https://www.viki.com/tv/38375c-semantic-error"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/pe3w2PnXAdGyilHNuyLHNFVASnp.jpg"
   },
   {
     "id": "color-rush",
@@ -554,7 +554,7 @@
         "url": "https://www.viki.com/movies/37671c-color-rush-movie"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/ieePfhScQdToCEWzMuaskwYru0d.jpg"
   },
   {
     "id": "gameboys",
@@ -581,7 +581,7 @@
         "url": "https://www.youtube.com/watch?v=uvOfPBV-W6A"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/7G7r0VeE5VD2W4mF2kL5BIQ0de2.jpg"
   },
   {
     "id": "pearl-next-door",
@@ -608,7 +608,7 @@
         "url": "https://www.youtube.com/watch?v=paloSIbSQR0"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/x1FxufVWtXEmiU0Ad8ktdkX0cez.jpg"
   },
   {
     "id": "hello-stranger",
@@ -635,7 +635,7 @@
         "url": "https://www.youtube.com/watch?v=YasPlmnnMpQ"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/uu8yWT64FP0W39whxIcs2aMv1Wb.jpg"
   },
   {
     "id": "heartstopper",
@@ -661,7 +661,7 @@
         "url": "https://www.youtube.com/watch?v=gHALOizCpf0"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/dQc0QbDiHjGmWxTfKtBgYtS4bj5.jpg"
   },
   {
     "id": "shelter",
@@ -687,7 +687,7 @@
         "url": "https://www.youtube.com/watch?v=2_H-6jEYTHo"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/buPFnHZ3xQy6vZEHxbHgL1Pc6CR.jpg"
   },
   {
     "id": "everybodys-talking-about-jamie",
@@ -712,7 +712,7 @@
         "url": "https://www.primevideo.com/detail/Everybodys-Talking-About-Jamie/0J7109DHI2JGYJ4M04ABATNRYD"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/wsCHo64bJ8lMhKv8LtOKEn1kjsH.jpg"
   },
   {
     "id": "latter-days",
@@ -738,7 +738,7 @@
         "url": "https://tubitv.com/movies/500188/latter-days"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/uwzJL11Xp6h8stocOz6E8e2LWtB.jpg"
   },
   {
     "id": "the-boys-in-the-band",
@@ -759,7 +759,7 @@
       "slice-of-life"
     ],
     "links": [],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/2D2gi13hnrXWaspWuWmdbEZ8bef.jpg"
   },
   {
     "id": "daddy",
@@ -782,7 +782,7 @@
         "url": "https://www.youtube.com/watch?v=bcYzYiVDIlg"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/lEYg1X8RjqNB5NWEtodcbK7vm1G.jpg"
   },
   {
     "id": "but-im-a-cheerleader",
@@ -809,7 +809,7 @@
         "url": "https://www.youtube.com/watch?v=HnUvneNxoz8"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/8huDg3Q0EmcWuN9HgYsO8ylAp9f.jpg"
   },
   {
     "id": "lgbtq-christmas-movies",
@@ -864,7 +864,7 @@
         "url": "https://www.youtube.com/watch?v=FPOIO2vQhqA"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/yeHpjQvq881PhmeNgyMHwcf1ZfJ.jpg"
   },
   {
     "id": "we-are",
@@ -892,7 +892,7 @@
         "url": "https://www.youtube.com/watch?v=-8hwU9CdDhI"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/gqVxKunQPQVOZjElkVD0kz19ld7.jpg"
   },
   {
     "id": "perfect-10-liners",
@@ -920,7 +920,7 @@
         "url": "https://www.youtube.com/watch?v=JmJ1JL0xxtQ"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/1ZmjzDN2f7ZxzMluOTO5aPztI9e.jpg"
   },
   {
     "id": "the-eclipse",
@@ -949,7 +949,7 @@
         "url": "https://www.youtube.com/watch?v=ReJF2dzJHno"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/upelDW5lk3wu0F4Cz9vVwXNvluE.jpg"
   },
   {
     "id": "the-heart-killers",
@@ -982,7 +982,7 @@
         "url": "https://open.spotify.com/playlist/2QUenSOVfj8HogPAl1TUFU?si=0d358b1b10bf4cf4"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/xb3nD8J8dnpwnvVNIXV92tszrwV.jpg"
   },
   {
     "id": "only-friends",
@@ -1011,7 +1011,7 @@
         "url": "https://www.youtube.com/watch?v=Xq6_kW4kk9M"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/9RgM3uOPOmQ9ipzyom25WLC3hpk.jpg"
   },
   {
     "id": "between-us",
@@ -1037,7 +1037,7 @@
         "url": "https://www.youtube.com/watch?v=4Npw0dzxdso"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/xeNg3ZJNqRde0yMX1MSTWK1XdyY.jpg"
   },
   {
     "id": "wandee-goodday",
@@ -1067,7 +1067,7 @@
         "url": "https://www.youtube.com/watch?v=BC5opHhiSNI"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/6DqZslHFWmhiHNYC6zQL8aSVOuX.jpg"
   },
   {
     "id": "last-twilight",
@@ -1098,7 +1098,7 @@
         "url": "https://www.youtube.com/watch?v=f7o-8XQtxKQ"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/buyQqbfJ2gNcog86HrTawMyxVPD.jpg"
   },
   {
     "id": "cherry-magic-thailand",
@@ -1126,7 +1126,7 @@
         "url": "https://mydramalist.com/743929-cherry-magic-thailand"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/q3PaIEPemFf3w4jGohaohFtnogm.jpg"
   },
   {
     "id": "my-school-president",
@@ -1155,7 +1155,7 @@
         "url": "https://www.youtube.com/watch?v=XC50fpgLCqI"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/zK3cdksy41NaIvXWVVxltBM45aX.jpg"
   },
   {
     "id": "me-and-thee",
@@ -1184,7 +1184,7 @@
         "url": "https://www.iq.com/album/me-and-thee-2025-g78hiyaxxh"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/3gmMyuu86ATOnr68wyoHBvhhUv6.jpg"
   },
   {
     "id": "bed-friend",
@@ -1210,7 +1210,7 @@
         "url": "https://mydramalist.com/699511-bed-friend"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/rrLKRmz0gnaKMi7O7qcVlzEHr9H.jpg"
   },
   {
     "id": "boys-be-brave",
@@ -1235,7 +1235,7 @@
         "url": "https://mydramalist.com/764797-roommates"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/fOjX3bReDpHBijo7KgmShr1DhBJ.jpg"
   },
   {
     "id": "cooking-crush-uncut-version",
@@ -1288,7 +1288,7 @@
         "url": "https://mydramalist.com/695279-cutie-pie"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/wErkJHHVjxezm6unGOSXYwIInQm.jpg"
   },
   {
     "id": "dark-blue-kiss",
@@ -1314,7 +1314,7 @@
         "url": "https://mydramalist.com/31858-dark-blue-kiss"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/ey2BZaCaJllWy7BGAw6J4zNfPK4.jpg"
   },
   {
     "id": "enchante",
@@ -1340,7 +1340,7 @@
         "url": "https://mydramalist.com/682617-enchante"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/jXSmtPh2H1QuuxTWr4KEzJpn3CF.jpg"
   },
   {
     "id": "fish-upon-the-sky",
@@ -1367,7 +1367,7 @@
         "url": "https://mydramalist.com/682613-fish-upon-the-sky"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/gbrZuf9SUGxGjDnUOcePykblRtv.jpg"
   },
   {
     "id": "hidden-agenda",
@@ -1393,7 +1393,7 @@
         "url": "https://mydramalist.com/743911-hidden-agenda"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/30ZApQjC28XNAGGiqgHvFp4PyUT.jpg"
   },
   {
     "id": "i-cannot-reach-you",
@@ -1419,7 +1419,7 @@
         "url": "https://mydramalist.com/751409-kimi-ni-wa-todokanai"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/WrJDUbv8yzwqhhBzvYotHEpGQ2.jpg"
   },
   {
     "id": "individual-circumstances",
@@ -1444,7 +1444,7 @@
         "url": "https://mydramalist.com/740123-individual-circumstances"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/4VQs3SalFe1Mri9RO5j9fvSCqxq.jpg"
   },
   {
     "id": "jun-and-jun",
@@ -1469,7 +1469,7 @@
         "url": "https://mydramalist.com/723189-jun-and-jun"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/ac2W54ujGNNVXPyPvXOt3RAzDsE.jpg"
   },
   {
     "id": "love-sea",
@@ -1494,7 +1494,7 @@
         "url": "https://mydramalist.com/758185-love-sea"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/nV6AWBI0aCN41rx6vFdwaAmmoPl.jpg"
   },
   {
     "id": "love-tractor",
@@ -1519,7 +1519,7 @@
         "url": "https://mydramalist.com/722885-a-tractor-loaded-with-love"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/ukCVZdit4e3ShbDClPBwgkHoKWJ.jpg"
   },
   {
     "id": "lovely-writer",
@@ -1545,7 +1545,7 @@
         "url": "https://mydramalist.com/61275-lovely-writer"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/A3BhNxkie8WGuF3909sciZPgqZG.jpg"
   },
   {
     "id": "mr-heart",
@@ -1570,7 +1570,7 @@
         "url": "https://mydramalist.com/62919-mr-heart"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/cDCt82AzTZfySJrS44MlGdVdpir.jpg"
   },
   {
     "id": "my-love-mix-up-thailand",
@@ -1598,7 +1598,7 @@
         "url": "https://mydramalist.com/758599-my-love-mix-up"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/5BpgAUwHWOOPv4tvKmY9MouKt9d.jpg"
   },
   {
     "id": "my-only-12",
@@ -1624,7 +1624,7 @@
         "url": "https://mydramalist.com/714201-my-only-12"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/zqiKFstOrjbuirdpKhMoseeilNB.jpg"
   },
   {
     "id": "naughty-babe",
@@ -1650,7 +1650,7 @@
         "url": "https://mydramalist.com/745185-naughty-babe"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/20c4ZGTF8nL3JmxyCASW8W5EgvG.jpg"
   },
   {
     "id": "only-boo",
@@ -1675,7 +1675,7 @@
         "url": "https://mydramalist.com/758581-only-boo"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/u9XVUpkAdNMx6NoRffkoGPr2OPj.jpg"
   },
   {
     "id": "our-skyy-2",
@@ -1701,7 +1701,7 @@
         "url": "https://mydramalist.com/743931-our-skyy-2"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/ow7zxA2AK7VAduW3GEkPBUqnZeE.jpg"
   },
   {
     "id": "roommates-of-poongduck-304",
@@ -1727,7 +1727,7 @@
         "url": "https://mydramalist.com/723171-the-circumstances-of-pungdeok-villa-room-304"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/5ZDGTbtLvMS8oGxdFupuLOLhkp4.jpg"
   },
   {
     "id": "sotus",
@@ -1754,7 +1754,7 @@
         "url": "https://mydramalist.com/16667-sotus-the-series"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/9hAdBn9suCn2Devf9A19oR6otDm.jpg"
   },
   {
     "id": "sotus-s",
@@ -1779,7 +1779,7 @@
         "url": "https://mydramalist.com/22722-sotus-s-the-series"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/9hAdBn9suCn2Devf9A19oR6otDm.jpg"
   },
   {
     "id": "step-by-step",
@@ -1805,7 +1805,7 @@
         "url": "https://mydramalist.com/717357-step-by-step"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/AknIvHVoULChsVmVTTceD75hvq0.jpg"
   },
   {
     "id": "the-eighth-sense",
@@ -1830,7 +1830,7 @@
         "url": "https://mydramalist.com/721085-the-eighth-sense"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/uoHehNNiO8lWpmaKmlx8icDESbm.jpg"
   },
   {
     "id": "this-love-doesnt-have-long-beans",
@@ -1855,7 +1855,7 @@
         "url": "https://mydramalist.com/765955-this-love-doesn-t-have-long-beans"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/8JWGotah8kRzwufFvXXvrkZzeYZ.jpg"
   },
   {
     "id": "to-my-star-season-2-our-untold-stories",
@@ -1906,7 +1906,7 @@
         "url": "https://mydramalist.com/732133-unintentional-love-story"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/7sA7TplHI0zi20VKCzVSLObCVvM.jpg"
   },
   {
     "id": "vice-versa",
@@ -1933,7 +1933,7 @@
         "url": "https://mydramalist.com/715907-vice-versa"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/jJCTEzqidS57AGLTPNHPCxYCnxA.jpg"
   },
   {
     "id": "why-r-u",
@@ -1959,6 +1959,6 @@
         "url": "https://mydramalist.com/734923-why-r-u-korean-remake"
       }
     ],
-    "poster": null
+    "poster": "https://image.tmdb.org/t/p/w500/wOphDDki2oPQI1nooRKQcM1qpxq.jpg"
   }
 ]
