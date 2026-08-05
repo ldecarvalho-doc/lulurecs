@@ -92,7 +92,9 @@
   }
   .toggle.active { border-color: var(--heart); color: var(--heart); }
   .toggle.reset { font-family: inherit; color: var(--accent-2); border-color: var(--accent-2); }
-  .toggle.reset.hidden { display: none; }
+  .toggle.reset.hidden, .toggle.share.hidden { display: none; }
+  .toggle.share { font-family: inherit; color: var(--accent); border-color: var(--border); }
+  .toggle.share:hover { border-color: var(--accent); }
   .toggle.reset:hover { background: var(--surface-2); }
 
   .layout {
@@ -266,6 +268,7 @@
   </select>
   <span class="toggle" id="favToggle">♥ Favorites</span>
   <button class="toggle reset hidden" id="resetBtn" title="Clear search, filters and tags">✕ Reset filters</button>
+  <button class="toggle share hidden" id="shareBtn" title="Copy a link to exactly this view">🔗 Copy link</button>
 </div>
 
 <div class="layout">
@@ -301,6 +304,8 @@
   ];
 
   let categories = [], items = [], activeCat = null;
+  const catButtons = {};
+  let applyingHash = false;
   let lists = [], activeList = null, allItemsCache = null;
   let tagInfo = {}, tagGroups = [], tagCounts = {};
   const COLLAPSE_KEY = "lulurecs:collapsedGroups";
@@ -321,18 +326,19 @@
     allBtn.textContent = "✨ All";
     allBtn.onclick = () => selectAll(allBtn);
     nav.appendChild(allBtn);
+    catButtons["all"] = allBtn;
     categories.filter(cat => cat.enabled).forEach(cat => {
       const b = document.createElement("button");
       b.textContent = `${cat.emoji} ${cat.name}`;
       b.onclick = () => selectCategory(cat, b);
       nav.appendChild(b);
+      catButtons[cat.id] = b;
     });
   }
 
   async function selectAll(btn) {
     activeCat = { id: "__all__", name: "All" };
     activeList = null;
-    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
     [...$("cats").children].forEach(b => b.classList.remove("active"));
     document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
@@ -345,7 +351,6 @@
   async function selectCategory(cat, btn) {
     activeCat = cat;
     activeList = null;
-    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
     [...$("cats").children].forEach(b => b.classList.remove("active"));
     document.querySelectorAll("#lists button").forEach(b => b.classList.remove("active"));
     if (btn) btn.classList.add("active");
@@ -396,7 +401,6 @@
     items = l.items.map(id => all.find(i => i.id === id)).filter(Boolean);
     [...$("cats").children].forEach(b => b.classList.remove("active"));
     document.querySelectorAll("#lists button").forEach(b => b.classList.toggle("active", b.dataset.listId === l.id));
-    history.replaceState(null, "", "#list=" + l.id);
     state.sort = "curated"; $("sort").value = "curated";
     buildFilters();
     render();
@@ -531,6 +535,8 @@
     $("favToggle").classList.toggle("active", state.favsOnly);
     const filtering = !!(state.search || state.type || state.country || state.tags.size || state.favsOnly);
     $("resetBtn").classList.toggle("hidden", !filtering);
+    $("shareBtn").classList.toggle("hidden", !(activeCat || activeList));
+    syncHash();
     const list = filtered();
     $("count").textContent = `${list.length} of ${items.length} recs` + (state.favsOnly ? " · showing your favorites" : "");
     const grid = $("grid");
@@ -748,6 +754,7 @@
   $("countryFilter").onchange = e => { state.country = e.target.value; render(); };
   $("sort").onchange = e => { state.sort = e.target.value; render(); };
   $("favToggle").onclick = () => { state.favsOnly = !state.favsOnly; render(); };
+  $("shareBtn").onclick = e => copyShareLink(e.currentTarget);
   $("resetBtn").onclick = () => {
     state.search = ""; state.type = ""; state.country = ""; state.favsOnly = false;
     state.tags.clear();
@@ -755,12 +762,73 @@
     render();
   };
 
-  function applyHash(hash) {
-    const m = (hash || "").match(/list=([\w-]+)/);
-    if (!m) return false;
-    const l = lists.find(x => x.id === m[1]);
-    if (l) { selectList(l); return true; }
-    return false;
+  // ---------- SHAREABLE URLS ----------
+  // Everything you're looking at is encoded in the hash, e.g.
+  // #cat=k-dramas&tags=romance,melodrama&q=office&sort=rating
+  function syncHash() {
+    if (applyingHash) return;
+    const p = [];
+    if (activeList) p.push("list=" + activeList.id);
+    else if (activeCat) p.push("cat=" + (activeCat.id === "__all__" ? "all" : activeCat.id));
+    if (state.tags.size) p.push("tags=" + [...state.tags].join(","));
+    if (state.search) p.push("q=" + encodeURIComponent(state.search));
+    if (state.type) p.push("type=" + state.type);
+    if (state.country) p.push("country=" + state.country);
+    if (state.favsOnly) p.push("fav=1");
+    if (state.sort && state.sort !== "title") p.push("sort=" + state.sort);
+    const h = p.length ? "#" + p.join("&") : "";
+    if (location.hash !== h) history.replaceState(null, "", location.pathname + location.search + h);
+  }
+
+  function parseHash(hash) {
+    const out = {};
+    (hash || "").replace(/^#/, "").split("&").forEach(kv => {
+      const [k, ...rest] = kv.split("=");
+      if (k) out[k] = decodeURIComponent(rest.join("="));
+    });
+    return out;
+  }
+
+  async function applyHash(hash) {
+    const p = parseHash(hash);
+    if (!p.list && !p.cat) return false;
+    applyingHash = true;
+    try {
+      if (p.list) {
+        const l = lists.find(x => x.id === p.list);
+        if (!l) return false;
+        await selectList(l);
+      } else if (p.cat === "all") {
+        await selectAll(catButtons["all"]);
+      } else {
+        const c = categories.find(x => x.id === p.cat && x.enabled);
+        if (!c) return false;
+        await selectCategory(c, catButtons[p.cat]);
+      }
+      // layered on top, because selecting a category resets the filters
+      if (p.q) { state.search = p.q; $("search").value = p.q; }
+      if (p.type) { state.type = p.type; $("typeFilter").value = p.type; }
+      if (p.country) { state.country = p.country; $("countryFilter").value = p.country; }
+      if (p.sort) { state.sort = p.sort; $("sort").value = p.sort; }
+      if (p.fav === "1") state.favsOnly = true;
+      if (p.tags) p.tags.split(",").filter(Boolean).forEach(t => state.tags.add(t));
+    } finally {
+      applyingHash = false;
+    }
+    render();
+    return true;
+  }
+
+  async function copyShareLink(btn) {
+    syncHash();
+    try {
+      await navigator.clipboard.writeText(location.href);
+      const old = btn.textContent;
+      btn.textContent = "✓ Link copied!";
+      setTimeout(() => btn.textContent = old, 2000);
+    } catch {
+      prompt("Copy this link:", location.href);
+    }
   }
 
   (async () => {
@@ -770,7 +838,7 @@
     try { tagGroups = await (await fetch("data/tag-groups.json")).json(); } catch { tagGroups = []; }
     await loadCategories();
     await loadLists();
-    const matched = applyHash(initialHash);
+    const matched = await applyHash(initialHash);
     if (!matched) renderPlaceholder();
     window.addEventListener("hashchange", () => applyHash(location.hash));
   })().catch(err => {
