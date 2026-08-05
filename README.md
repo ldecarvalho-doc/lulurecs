@@ -97,6 +97,10 @@ Items appear in the order you write them ("Curated order" sort). Every list gets
 
 Setup (once): GitHub → Settings → Developer settings → Fine-grained personal access tokens → Generate new token. Repository access: **only lulurecs**. Permissions: **Contents → Read and write**. Paste the token into the admin page — it's stored only in your browser's localStorage (never committed). Don't share the token; anyone holding it can edit the site.
 
+**Bulk editing:** tick recs in the Recs tab (or "select all shown" after filtering) to add/remove them from a list, add or remove a tag across all of them, or delete them in one go. The selection persists across category switches and the search filter, so you can gather picks from Visual Media *and* Musicals into one list before committing.
+
+**Giving a friend access:** add them under Settings → Collaborators. Note that GitHub's fine-grained tokens don't work for repos you don't own, so a collaborator must generate a **classic** token with the `repo` scope instead. Their commits are attributed to them, and removing them from Collaborators revokes access immediately.
+
 ## Local preview
 
 ```bash

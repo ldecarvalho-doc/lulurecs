@@ -100,9 +100,35 @@
         <select id="catSelect"></select>
         <button id="newRecBtn">+ New rec</button>
       </div>
-      <input type="text" id="recSearch" placeholder="Search recs by title…" style="width:100%; margin-top:10px">
+      <input type="text" id="recSearch" placeholder="Search recs by title, id or tag…" style="width:100%; margin-top:10px">
       <div class="card" style="margin-top:12px; padding:6px 12px">
+        <div class="row" style="padding:6px 2px; border-bottom:1px solid var(--border)">
+          <label style="margin:0; display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem">
+            <input type="checkbox" id="selectAll" style="width:auto"> select all shown
+          </label>
+          <span class="dim" id="selCount" style="margin-left:auto"></span>
+        </div>
         <ul class="plain" id="recList"></ul>
+      </div>
+
+      <div class="card hidden" id="bulkBar">
+        <h2 id="bulkTitle">0 selected</h2>
+        <p class="dim">Bulk actions apply to every selected rec, including ones hidden by the search or in other categories.</p>
+        <div class="row" style="margin-top:10px">
+          <select id="bulkListSelect"></select>
+          <button id="bulkAddToList">Add to list</button>
+          <button id="bulkRemoveFromList">Remove from list</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="bulkTag" placeholder="tag-name" style="min-width:140px">
+          <button id="bulkAddTag">+ Add tag</button>
+          <button id="bulkRemoveTag">− Remove tag</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="danger" id="bulkDelete">Delete selected</button>
+          <button id="bulkClear">Clear selection</button>
+          <span class="dim" id="bulkMsg"></span>
+        </div>
       </div>
 
       <div class="card hidden" id="recForm">
@@ -188,6 +214,7 @@
   const files = {};
   let categories = [], activeCatPath = null, editingId = null, editingListId = null;
   let recSearch = "", addItemSearch = "", pendingAdd = new Set();
+  const picked = new Set(); // bulk selection in the Recs tab (spans categories)
 
   const b64e = s => btoa(unescape(encodeURIComponent(s)));
   const b64d = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ""))));
@@ -236,16 +263,54 @@
   // ---------- RECS ----------
   const allEntries = () => categories.flatMap(c => files[c.file].data);
 
+  // find an entry in whichever category file holds it
+  function locate(id) {
+    for (const c of categories) {
+      const arr = files[c.file].data, i = arr.findIndex(e => e.id === id);
+      if (i >= 0) return { path: c.file, arr, i, entry: arr[i] };
+    }
+    return null;
+  }
+
+  function shownRecs() {
+    const q = recSearch.trim().toLowerCase();
+    return files[activeCatPath].data.filter(e => !q ||
+      (e.title + " " + e.id + " " + (e.tags || []).join(" ")).toLowerCase().includes(q));
+  }
+
   function renderRecs() {
     const q = recSearch.trim().toLowerCase();
-    const list = files[activeCatPath].data.filter(e => !q || e.title.toLowerCase().includes(q));
+    const list = shownRecs();
     $("recList").innerHTML = list.map(e => `
-      <li><span class="grow"><b>${e.title}</b> <small>· ${e.id} · ${e.luRating ?? "unrated"}★</small></span>
+      <li><input type="checkbox" class="selbox" value="${e.id}" ${picked.has(e.id) ? "checked" : ""} style="width:auto">
+      <span class="grow"><b>${e.title}</b> <small>· ${e.id} · ${e.luRating ?? "unrated"}★</small></span>
       <button class="mini" data-edit="${e.id}">Edit</button>
       <button class="mini danger" data-del="${e.id}">Delete</button></li>`).join("") ||
       `<li class="dim">${q ? "No matches." : "No entries yet."}</li>`;
     $("recList").querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openRecForm(b.dataset.edit));
     $("recList").querySelectorAll("[data-del]").forEach(b => b.onclick = () => deleteRec(b.dataset.del));
+    $("recList").querySelectorAll(".selbox").forEach(cb => cb.onchange = () => {
+      cb.checked ? picked.add(cb.value) : picked.delete(cb.value);
+      renderBulk();
+    });
+    const shownIds = list.map(e => e.id);
+    $("selectAll").checked = shownIds.length > 0 && shownIds.every(id => picked.has(id));
+    renderBulk();
+  }
+
+  function renderBulk() {
+    $("bulkBar").classList.toggle("hidden", !picked.size);
+    $("selCount").textContent = picked.size ? `${picked.size} selected` : "";
+    $("bulkTitle").textContent = `${picked.size} selected`;
+    $("bulkListSelect").innerHTML = lists().map(l =>
+      `<option value="${l.id}">${l.title}</option>`).join("") || "<option value=''>(no lists yet)</option>";
+  }
+
+  function bulkEachEntry(fn) {
+    picked.forEach(id => {
+      const loc = locate(id);
+      if (loc && fn(loc.entry) !== false) markDirty(loc.path);
+    });
   }
 
   function openRecForm(id) {
@@ -494,6 +559,81 @@
     renderListItems(l);
   };
   $("recSearch").oninput = e => { recSearch = e.target.value; renderRecs(); };
+
+  // ----- bulk actions -----
+  $("selectAll").onchange = e => {
+    shownRecs().forEach(r => e.target.checked ? picked.add(r.id) : picked.delete(r.id));
+    renderRecs();
+  };
+  $("bulkClear").onclick = () => { picked.clear(); renderRecs(); };
+  const bulkSay = t => { $("bulkMsg").textContent = t; setTimeout(() => $("bulkMsg").textContent = "", 4000); };
+
+  $("bulkAddToList").onclick = () => {
+    const l = lists().find(x => x.id === $("bulkListSelect").value);
+    if (!l) return bulkSay("Create a list first.");
+    let n = 0;
+    picked.forEach(id => { if (!l.items.includes(id)) { l.items.push(id); n++; } });
+    if (n) markDirty("data/lists.json");
+    bulkSay(`Added ${n} to "${l.title}"${n < picked.size ? ` (${picked.size - n} already there)` : ""}.`);
+    if (editingListId === l.id) openListForm(l.id);
+  };
+
+  $("bulkRemoveFromList").onclick = () => {
+    const l = lists().find(x => x.id === $("bulkListSelect").value);
+    if (!l) return;
+    const before = l.items.length;
+    l.items = l.items.filter(id => !picked.has(id));
+    const n = before - l.items.length;
+    if (n) markDirty("data/lists.json");
+    bulkSay(`Removed ${n} from "${l.title}".`);
+    if (editingListId === l.id) openListForm(l.id);
+  };
+
+  $("bulkAddTag").onclick = () => {
+    const t = slug($("bulkTag").value);
+    if (!t) return bulkSay("Type a tag first.");
+    let n = 0;
+    bulkEachEntry(e => {
+      if ((e.tags || []).includes(t)) return false;
+      (e.tags = e.tags || []).push(t); n++;
+    });
+    $("bulkTag").value = "";
+    bulkSay(`Added "${t}" to ${n} rec(s).`);
+    renderRecs();
+  };
+
+  $("bulkRemoveTag").onclick = () => {
+    const t = slug($("bulkTag").value);
+    if (!t) return bulkSay("Type a tag first.");
+    let n = 0;
+    bulkEachEntry(e => {
+      if (!(e.tags || []).includes(t)) return false;
+      e.tags = e.tags.filter(x => x !== t); n++;
+    });
+    $("bulkTag").value = "";
+    bulkSay(`Removed "${t}" from ${n} rec(s).`);
+    renderRecs();
+  };
+
+  $("bulkDelete").onclick = () => {
+    if (!confirm(`Delete ${picked.size} rec(s)? They'll also be removed from any lists.`)) return;
+    picked.forEach(id => {
+      const loc = locate(id);
+      if (!loc) return;
+      files[loc.path].data = loc.arr.filter(e => e.id !== id);
+      markDirty(loc.path);
+    });
+    lists().forEach(l => {
+      const before = l.items.length;
+      l.items = l.items.filter(id => !picked.has(id));
+      if (l.items.length !== before) markDirty("data/lists.json");
+    });
+    const n = picked.size;
+    picked.clear();
+    renderRecs();
+    if (editingListId) openListForm(editingListId);
+    bulkSay(`Deleted ${n}.`);
+  };
   $("saveListBtn").onclick = saveList;
   $("commitBtn").onclick = commit;
   $("discardBtn").onclick = discard;
